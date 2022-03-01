@@ -1,0 +1,48 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <MudDialog DisableSidePadding="false" ClassContent="px-0">
+        <DialogContent>
+            <MudGrid Class="pt-0 pb-4 px-2">
+                <MudItem xs="12">
+                    <div class="d-flex">
+                        <MudAvatar Class="mr-2" Variant="Variant.Filled" Image="@SellOffer.SellerProfilePictureLink"></MudAvatar>
+                        <MudText Class="align-self-center mr-auto">@SellOffer.SellerUsername</MudText>
+                        <MudChip Class="align-self-center" Color="Color.Primary">@SellOffer.SellOfferAmount XRP</MudChip>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="12">
+                     <div class="d-flex justify-center">
+                        <MudAvatar Class="flex-grow-1 nft-avatar-image" Rounded="true" Style="height:400px; max-width:400px;" Image="@SellOffer.NFT.Metadata.Uri"></MudAvatar>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText><b>NFT ID: </b>@SellOffer.NFT.Metadata.Id</MudText>
+                    <MudText><b>NFT Name: </b>@SellOffer.NFT.Metadata.Name</MudText>
+                    <MudText><b>NFT Token ID: </b><MudText Inline="true">@(string.Format("{0}....{1}", @SellOffer.NFT.TokenId.Substring(0, 10), @SellOffer.NFT.TokenId.Substring(@SellOffer.NFT.TokenId.Length - 11, 10))) </MudText></MudText>
+                    <MudText><b>NFT Original Creator: </b>@SellOffer.NFT.Metadata.Creator</MudText>
+                    <MudText><b>NFT Date Minted: </b>@SellOffer.NFT.Metadata.Created.ToLocalTime().ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.caption" Color="Color.Error"><b>Estimated Buying Cost: NFT Sell Offer Amount in XRP + ~0.0001 XRP (100 drops)</b></MudText>
+                </MudItem>
+
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" OnClick="Cancel">Cancel</MudButton>
+            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" OnClick="ClaimAsync" Color="Color.Primary">
+                @if (IsProcessing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText>BUY</MudText>
+                }
+            </MudButton>
+
+        </DialogActions>
+    </MudDialog>
+</MudContainer>

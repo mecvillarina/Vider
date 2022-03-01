@@ -1,0 +1,30 @@
+﻿.text-white {
+    color: var(--mud-palette-white);
+}
+
+.background {
+    background-color: var(--mud-palette-background);
+}
+
+.background-transparent {
+    background-color: transparent;
+}
+
+.background-dark {
+    background-color: #002A4A;
+}
+
+.text-limit-1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.nft-avatar-image {
+    float: none;
+    overflow: hidden;
+    font-size: 2rem;
+    background-color: var(--mud-palette-white);
+}

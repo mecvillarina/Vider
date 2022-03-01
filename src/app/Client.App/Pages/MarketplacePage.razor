@@ -1,0 +1,66 @@
+﻿@page "/marketplace"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False" class="@($"d-flex flex-wrap {FlexDirection}")">
+    <div class="d-flex ma-4 mr-auto">
+        <MudText Class="mr-4 align-self-center" Typo="Typo.h4" GutterBottom="false">Marketplace</MudText>
+        <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" OnClick="(() => FetchSellOffersAsync())" />
+    </div>
+
+    <div class="my-4 mx-4" style="@($"{(FlexDirection.Contains("flex-row") ? "width:300px" : "")}")">
+        <MudTextField Margin="0" Variant="Variant.Outlined" T="string" Placeholder="Search" Adornment="Adornment.Start" ValueChanged="((s) => FetchSellOffersAsync(s))" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"></MudTextField>
+    </div>
+</MudContainer>
+
+@if (IsLoaded)
+{
+
+    <MudContainer MaxWidth="MaxWidth.False" class="@($"d-flex {FlexDirection}")">
+        @if (SellOffers.Any())
+        {
+            @foreach (var sellOffer in SellOffers)
+            {
+                <MudCard Elevation="10" Class="ma-4 blue-grey darken-4" Style="@CardStyle">
+                    <MudCardHeader>
+                        <CardHeaderAvatar>
+                            <MudAvatar Class="align-self-center cursor-pointer" Image="@sellOffer.SellerProfilePictureLink" @onclick="(() => InvokeViewCreatorProfileAsync(sellOffer.SellerUsername))"></MudAvatar>
+                        </CardHeaderAvatar>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.body1" Class="text-white" GutterBottom="false"><b>@sellOffer.NFT.Metadata.Id</b></MudText>
+                            <MudText Typo="Typo.body2" Class="text-white cursor-pointer  d-inline" GutterBottom="false" @onclick="(() => InvokeViewCreatorProfileAsync(sellOffer.SellerUsername))">@sellOffer.SellerUsername</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudChip Class="align-self-center" Size="Size.Small" Color="Color.Primary">@sellOffer.SellOfferAmount XRP</MudChip>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardMedia Image="@sellOffer.NFT.Metadata.Uri" Height="300" />
+                    <MudCardContent>
+                        <div class="d-flex justify-space-between">
+                            <MudText Typo="Typo.body1" Class="align-self-center text-limit-1 text-white">@sellOffer.NFT.Metadata.Name</MudText>
+                            @if (sellOffer.CanBuy)
+                            {
+                                <MudButton Class="align-self-center" Size="Size.Small" Color="Color.Primary" Variant="Variant.Filled" OnClick="(() => InvokeBuyNFTModalAsync(sellOffer))">Buy</MudButton>
+                            }
+                        </div>
+                        @if (sellOffer.NFT.IsBurnable)
+                        {
+                            <MudChip Class="ma-0 my-2 mr-2" Size="Size.Small" Color="Color.Primary">Burnable</MudChip>
+                        }
+                        @if (sellOffer.SellOfferIsExclusiveForSubscribers)
+                        {
+                            <MudChip Class="ma-0 my-2 mr-2" Size="Size.Small" Color="Color.Secondary">Subscriber-Exclusive</MudChip>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            }
+        }
+        else
+        {
+            <div class="ma-4">
+                <MudText Typo="Typo.h5" GutterBottom="false">Hmm...</MudText>
+                <MudText Class="mt-2 align-self-center" Typo="Typo.h6" GutterBottom="false">We couldn't find any for sale NFTs.</MudText>
+            </div>
+        }
+    </MudContainer>
+}

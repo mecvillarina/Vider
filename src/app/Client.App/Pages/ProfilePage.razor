@@ -1,0 +1,255 @@
+﻿@page "/profile"
+@page "/"
+
+@attribute [Authorize]
+
+@if (IsLoaded)
+{
+    <MudContainer MaxWidth="MaxWidth.False">
+
+        <MudPaper Square="true" Elevation="10" Class="d-flex flex-wrap pa-4 blue-grey darken-4">
+            <div class="align-self-center ma-4" style="position:relative" @onmouseover="(() => ToggleProfilePhotoOvelay(true))" @onmouseleave="(() => ToggleProfilePhotoOvelay(false))">
+                <MudAvatar Size="Size.Large" Style="height:120px; width:120px; font-size:2rem; " Image="@Profile.ProfilePictureLink"></MudAvatar>
+
+                <InputFile id="Photo1" OnChange="((InputFileChangeEventArgs args) => OnProfilePictureChange(args))" hidden accept=".jpg, .jpeg, .png" />
+
+                <MudOverlay Visible="IsProfilePhotoOverlayVisible" Absolute="true">
+                    @if (!IsUploadingProfilePhoto)
+                    {
+                        <MudFab HtmlTag="label" Color="Color.Primary" Icon="@Icons.Filled.CloudUpload" for="Photo1" />
+                    }
+                </MudOverlay>
+
+                <MudOverlay Visible="IsUploadingProfilePhoto" DarkBackground="true" Absolute="true">
+                    <MudProgressCircular Class="ms-n1" Indeterminate="true" Color="Color.Primary" />
+                </MudOverlay>
+            </div>
+
+
+            <div Class="align-self-center ml-2">
+                <MudText Typo="Typo.h4" Class="text-white">@Profile.Name</MudText>
+                <MudText Typo="Typo.subtitle1" Class="text-white">@Profile.SubscriberCount.ToMetric() @(Profile.SubscriberCount <= 1 ? "Subscriber" : "Subscribers")</MudText>
+                <MudText Typo="Typo.caption" Class="text-white">@Profile.Bio</MudText><br />
+                <MudButton Class="my-2 mr-2" EndIcon="@Icons.Material.Filled.AddPhotoAlternate" Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => InvokeMintNFTModalAsync())">Create/Mint NFT</MudButton>
+                <MudButton Class="my-2" EndIcon="@Icons.Material.Filled.PostAdd" Variant="Variant.Filled" Color="Color.Secondary" OnClick="(() => InvokeCreatePostModalAsync())">Create Post</MudButton>
+            </div>
+        </MudPaper>
+
+        <MudPaper Square="true">
+            <MudTabs Elevation="0" Color="Color.Primary" @ref="tabs" ActivePanelIndexChanged="OnTabPanelIndexChanged">
+                <MudTabPanel Text="NFT Rewards">
+                    <MudPaper Square="true" Elevation="10" Class="py-8 px-4 px-sm-8 mt-0 blue-grey darken-4">
+                        <div>
+                            <MudText Typo="Typo.h4" GutterBottom="false" Class="text-white">NFT Rewards <MudText Inline="true">(for your new subscribers)</MudText></MudText>
+                            <MudText Typo="Typo.caption" Class="text-white">* To attract new subscribers, add your own creative content in an image form and Vider will transform it into an NFT to reward them when they subscribe.</MudText> <br />
+                            <MudText Typo="Typo.caption" Class="text-white">* When there's a new subscription, Vider will randomly select one from your uploaded creative content and turned into an NFT.</MudText> <br />
+                            <MudText Typo="Typo.caption" Class="text-white">* After the NFT has been created/minted, it will be automatically send to your new subscriber. It will appear to your new subscriber's Profile under 'Claims/Gifts' tab.</MudText> <br />
+                        </div>
+
+                        <div class="d-flex flex-wrap mt-4">
+                            @if (IsFetchingRewards)
+                            {
+                                <MudText Class="text-white">Fetching...</MudText>
+                            }
+                            else
+                            {
+
+                                <div class="align-self-center mr-4 mb-4">
+                                    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Style="height:60px; width:60px; font-size:2rem; " OnClick="InvokeAddRewardModalAsync" />
+                                </div>
+
+                                @foreach (var reward in Rewards)
+                                {
+                                    <div class="mr-4 mb-4 align-self-center" style="position:relative">
+                                        <MudAvatar Rounded="true" Style="height:150px; width:150px; font-size:2rem;" Image="@reward.UrlLink"></MudAvatar>
+                                        <MudOverlay Absolute="true" DarkBackground="true">
+                                            <MudFab Size="Size.Large" Color="Color.Primary" Icon="@Icons.Material.Filled.Delete" />
+                                        </MudOverlay>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </MudPaper>
+                </MudTabPanel>
+                <MudTabPanel Text="NFTs">
+                    <MudPaper Square="true" Elevation="10" Class="py-8 px-4 px-sm-8 mt-0 blue-grey darken-4">
+                        <MudText Typo="Typo.h4" Class="text-white">My NFTs</MudText>
+
+                        <div class="@($"mt-4 d-flex {FlexDirection}")">
+                            @if (IsFetchingNFTs)
+                            {
+                                <MudText Class="text-white">Fetching...</MudText>
+                            }
+                            else
+                            {
+                                @foreach (var nft in NFTs)
+                                {
+                                    <MudCard Elevation="10" Class="my-4 mr-sm-4 background" Style="@CardStyle">
+                                        <MudCardHeader>
+                                            <CardHeaderContent>
+                                                <MudText Typo="Typo.body1"><b>@nft.Metadata.Id</b></MudText>
+                                            </CardHeaderContent>
+                                            <CardHeaderActions>
+                                                <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+                                                    @if (nft.SellOffer == null)
+                                                    {
+                                                        @if (nft.IsBurnable)
+                                                        {
+                                                            <MudMenuItem OnClick="(() => InvokeBurnNFTModalAsync(nft))">Burn</MudMenuItem>
+                                                        }
+
+                                                        @if (nft.IsTransferable)
+                                                        {
+                                                            <MudMenuItem OnClick="(() => InvokeGiftNFTModalAsync(nft))">Gift</MudMenuItem>
+                                                        }
+                                                        <MudMenuItem OnClick="(() => InvokeSellNFTModalAsync(nft))">Sell</MudMenuItem>
+                                                    }
+                                                    else
+                                                    {
+                                                        <MudMenuItem OnClick="(() => InvokeCancelSellNFTModalAsync(nft))">Cancel Sell</MudMenuItem>
+                                                    }
+                                                </MudMenu>
+                                            </CardHeaderActions>
+                                        </MudCardHeader>
+                                        <MudCardMedia Image="@nft.Metadata.Uri" Height="300" />
+                                        <MudCardContent>
+                                            <MudText Typo="Typo.body2" Class="text-limit-1"><b>@nft.Metadata.Name</b></MudText>
+                                            <MudText Typo="Typo.caption" Class="text-limit-1"><b>Original Creator: </b>@nft.Metadata.Creator</MudText>
+                                            <MudText Typo="Typo.caption" Class="text-limit-1"><b>Date Minted: </b>@nft.Metadata.Created.ToLocalTime().ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                                            @if (nft.IsBurnable)
+                                            {
+                                                <MudChip Class="ma-0 my-2 mr-2" Size="Size.Small" Color="Color.Secondary">Burnable</MudChip>
+                                            }
+                                            @if (nft.SellOffer != null)
+                                            {
+                                                if (nft.SellOffer.IsExclusiveForSubscribers)
+                                                {
+                                                    <MudChip Class="ma-0 my-2 mr-2" Size="Size.Small" Color="Color.Secondary">Subscriber-Exclusive</MudChip>
+                                                }
+                                                <MudChip Class="ma-0 my-2 mr-2" Color="Color.Primary">FOR SALE: @nft.SellOffer.Amount XRP</MudChip>
+                                            }
+                                        </MudCardContent>
+                                    </MudCard>
+                                }
+                            }
+                        </div>
+                    </MudPaper>
+                </MudTabPanel>
+                <MudTabPanel Text="Claims / Gifts">
+                    <MudPaper Square="true" Elevation="10" Class="py-8 px-4 px-sm-8 mt-0 blue-grey darken-4" Style="min-height: 300px">
+                        <MudText Typo="Typo.h4" Class="text-white">Claims / Gifts</MudText>
+
+                        <div class="@($"mt-4 d-flex {FlexDirection}")">
+                            @if (IsFetchingNFTClaims)
+                            {
+                                <MudText Class="text-white">Fetching...</MudText>
+                            }
+                            else
+                            {
+                                @foreach (var claim in NFTClaims)
+                                {
+                                    <MudCard Elevation="10" Class="my-4 mr-sm-4 background" Style="@CardStyle">
+                                        <MudCardHeader>
+                                            <CardHeaderContent>
+                                                <MudText Typo="Typo.body1"><b>@claim.Metadata.Id</b></MudText>
+                                                <MudText Typo="Typo.body2" Class="text-limit-1">From: @claim.SenderUsername</MudText>
+                                            </CardHeaderContent>
+                                            <CardHeaderActions>
+                                                <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+                                                    <MudMenuItem OnClick="(() => InvokeClaimNFTModalAsync(claim))">Claim</MudMenuItem>
+                                                </MudMenu>
+                                            </CardHeaderActions>
+                                        </MudCardHeader>
+                                        <MudCardMedia Image="@claim.Metadata.Uri" Height="300" />
+                                        <MudCardContent>
+                                            <MudText Typo="Typo.body2" Class="text-limit-1"><b>@claim.Metadata.Name</b></MudText>
+                                            <MudText Typo="Typo.caption">@claim.SenderMessage </MudText>
+                                        </MudCardContent>
+                                    </MudCard>
+                                }
+                            }
+                        </div>
+                    </MudPaper>
+                </MudTabPanel>
+                <MudTabPanel Text="Subscribers">
+                    <MudPaper Square="true" Elevation="10" Class="py-8 px-4 px-sm-8 mt-0 blue-grey darken-4" Style="min-height: 300px">
+                        <div>
+                            <MudText Typo="Typo.h4" Class="text-white">Subscribers</MudText>
+                        </div>
+
+                        <div class="@($"mt-4 d-flex {FlexDirection}")">
+                            @if (IsFetchingSubscribers)
+                            {
+                                <MudText Class="text-white">Fetching...</MudText>
+                            }
+                            else
+                            {
+                                @foreach (var subscriber in Subscribers)
+                                {
+                                    <MudCard Elevation="10" Class="my-4 mr-sm-4 background" Style="@(_currentBreakpoint == Breakpoint.Xs ? "" : "width:300px;")">
+                                        <MudCardHeader>
+                                            <CardHeaderAvatar>
+                                                <MudAvatar Class="align-self-center" Image="@subscriber.ProfilePictureLink"></MudAvatar>
+                                            </CardHeaderAvatar>
+                                            <CardHeaderContent>
+                                                <MudText Typo="Typo.body1" GutterBottom="false"><b>@subscriber.Username</b></MudText>
+                                                <MudText Typo="Typo.body2" Class="text-limit-1" GutterBottom="false">@subscriber.DateSubscribed.ToLocalTime().Humanize()</MudText>
+                                            </CardHeaderContent>
+                                        </MudCardHeader>
+                                    </MudCard>
+                                }
+                            }
+                        </div>
+                    </MudPaper>
+                </MudTabPanel>
+                <MudTabPanel Text="Posts">
+                    <MudPaper Square="true" Elevation="10" Class="py-8 px-4 px-sm-8 mt-0 blue-grey darken-4" Style="min-height: 300px">
+                        <div>
+                            <MudText Typo="Typo.h4" Class="text-white">Posts</MudText>
+                        </div>
+
+                        <div class="mt-4 d-flex flex-wrap flex-column align-center">
+                            @if (IsFetchingFeeds)
+                            {
+                                <MudText Class="text-white">Fetching...</MudText>
+                            }
+                            else
+                            {
+
+                                @foreach (var post in Posts)
+                                {
+                                    <MudCard Elevation="10" Class="my-4 mx-0 background" Style="@FeedCardStyle">
+                                        <MudCardHeader>
+                                            <CardHeaderAvatar>
+                                                <MudAvatar Class="align-self-center" Color="Color.Secondary" Image="@post.CreatorProfilePictureLink"></MudAvatar>
+                                            </CardHeaderAvatar>
+                                            <CardHeaderContent>
+                                                <MudText Typo="Typo.body1" GutterBottom="false"><b>@post.CreatorUsername</b></MudText>
+                                                <div class="d-flex">
+                                                    <MudText Typo="Typo.body2" Class="" GutterBottom="false">@post.PostDatePosted.ToLocalTime().Humanize()</MudText>
+
+                                                    @if (_currentBreakpoint != Breakpoint.Xs)
+                                                    {
+                                                        <MudText Typo="Typo.body2" Class="ml-2" Inline="true" GutterBottom="false">&bull;</MudText>
+                                                        <MudText Typo="Typo.body2" Class="ml-2" Inline="true" GutterBottom="false">@post.LikedCount.ToMetric() @(post.LikedCount <= 1 ? "Like" : "Likes" )</MudText>
+                                                    }
+                                                </div>
+                                            </CardHeaderContent>
+                                            <CardHeaderActions>
+                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => InvokeDeletePostModalAsync(post.PostId))" />
+                                            </CardHeaderActions>
+                                        </MudCardHeader>
+                                        <MudCardMedia Image="@post.PostImageUri" Height="500" />
+                                        <MudCardContent>
+                                            <MudText Typo="Typo.body1" Class="align-self-center">@post.PostCaption</MudText>
+                                        </MudCardContent>
+                                    </MudCard>
+                                }
+                            }
+                        </div>
+                    </MudPaper>
+                </MudTabPanel>
+            </MudTabs>
+        </MudPaper>
+    </MudContainer>
+}

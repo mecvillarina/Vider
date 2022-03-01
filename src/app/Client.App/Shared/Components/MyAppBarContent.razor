@@ -1,0 +1,36 @@
+﻿@namespace Client.App.Shared.Components
+
+<MudSpacer />
+
+@if (IsAccountValid)
+{
+    <MudHidden Breakpoint="Breakpoint.Xs">
+        <MudChip Class="ml-1" Color="Color.Secondary">@WalletBalance</MudChip>
+    </MudHidden>
+    <MudHidden Breakpoint="Breakpoint.Xs">
+        <MudChip Class="ml-1" Color="Color.Secondary">@WalletAddress</MudChip>
+    </MudHidden>
+}
+else
+{
+    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+        <MudChip Class="ml-1" Color="Color.Error" Disabled="IsPopulateWalletProcessing" OnClick="@OnPopulateWalletAsync">
+            @if (IsPopulateWalletProcessing)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                <MudText>Wallet Expired (Click Me)</MudText>
+            }
+        </MudChip>
+    </MudHidden>
+}
+<MudMenu Class="ml-3" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Variant="Variant.Filled" Color="Color.Primary">
+    <ActivatorContent>
+        <MudChip Color="Color.Primary" Icon="@Icons.Material.Filled.Person">@Name</MudChip>
+    </ActivatorContent>
+    <ChildContent>
+        <MudMenuItem OnClick="@(() => Logout())">Signout</MudMenuItem>
+    </ChildContent>
+</MudMenu>

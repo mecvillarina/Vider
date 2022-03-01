@@ -1,0 +1,42 @@
+﻿@page "/creators"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False" class="@($"d-flex {FlexDirection}")">
+    <div class="d-flex ma-4 mr-auto">
+        <MudText Class="mr-4 align-self-center" Typo="Typo.h4" GutterBottom="false">Creators</MudText>
+        <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" OnClick="(() => FetchCreatorsAsync())" />
+    </div>
+
+    <div class="my-4 mx-4" style="@($"{(FlexDirection.Contains("flex-row") ? "width:300px" : "")}")">
+        <MudTextField Margin="0" Variant="Variant.Outlined" T="string" Placeholder="Search" Adornment="Adornment.Start" ValueChanged="((s) => FetchCreatorsAsync(s))" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"></MudTextField>
+    </div>
+</MudContainer>
+
+@if (IsLoaded)
+{
+    <MudContainer MaxWidth="MaxWidth.False" class="@($"d-flex flex-wrap {FlexDirection}")">
+        @foreach (var creator in Creators)
+        {
+            <MudCard Elevation="10" Class="ma-4 blue-grey darken-4 cursor-pointer" Style="@CreatorCardStyle" @onclick="(() => InvokeViewCreatorProfileAsync(creator))">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Class="text-white text-limit-1"><b>@creator.Username.ToUpper()</b></MudText>
+                        <MudText Typo="Typo.body2" Class="text-white">@creator.SubscriberCount.ToMetric() @(creator.SubscriberCount <= 1 ? "Subscriber" : "Subscribers")</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        @if (creator.IsSubscribed)
+                        {
+                            <MudChip Class="align-self-center" Size="Size.Small" Color="Color.Secondary">Subscribed</MudChip>
+                        }
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardMedia Image="@creator.ProfilePictureLink" Height="300" />
+                <MudCardContent>
+                    <MudText Typo="Typo.body1" Class="text-white">@creator.Name</MudText>
+                    <MudText Typo="Typo.caption" Class="text-white text-limit-1">@creator.Bio</MudText>
+                </MudCardContent>
+            </MudCard>
+        }
+    </MudContainer>
+}

@@ -1,0 +1,59 @@
+﻿@page "/feeds"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False" class="d-flex">
+    <div class="d-flex ma-4 ml-2">
+        <MudText Class="mr-4 align-self-center" Typo="Typo.h4" GutterBottom="false">Feeds</MudText>
+        <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" OnClick="(() => FetchRecentPostsAsync())" />
+    </div>
+</MudContainer>
+
+@if (IsLoaded)
+{
+    <MudContainer MaxWidth="MaxWidth.False" class="d-flex align-center flex-column">
+        <MudButton Class="ma-2" EndIcon="@Icons.Material.Filled.PostAdd" Style="@CardStyle" Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => InvokeCreatePostModalAsync())">Create Post</MudButton>
+
+        @foreach (var post in Posts)
+        {
+
+            <MudCard Elevation="10" Class="ma-2 blue-grey darken-4" Style="@CardStyle">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Class="align-self-center cursor-pointer" Image="@post.CreatorProfilePictureLink" @onclick="(() => InvokeViewCreatorProfileAsync(post.CreatorUsername))"></MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Class="text-white cursor-pointer d-inline" GutterBottom="false" @onclick="(() => InvokeViewCreatorProfileAsync(post.CreatorUsername))"><b>@post.CreatorUsername</b></MudText>
+                        <div class="d-flex">
+                            <MudText Typo="Typo.body2" Class="text-white" GutterBottom="false">@post.PostDatePosted.ToLocalTime().Humanize()</MudText>
+
+                            @if (_currentBreakpoint != Breakpoint.Xs)
+                            {
+                                <MudText Typo="Typo.body2" Class="text-white ml-2" Inline="true" GutterBottom="false">&bull;</MudText>
+                                <MudText Typo="Typo.body2" Class="text-white ml-2" Inline="true" GutterBottom="false">@post.LikedCount.ToMetric() @(post.LikedCount <= 1 ? "Like" : "Likes" )</MudText>
+                            }
+                        </div>
+                        @if (_currentBreakpoint == Breakpoint.Xs)
+                        {
+                            <MudText Typo="Typo.body2" Class="text-white" Inline="true" GutterBottom="false">@post.LikedCount.ToMetric() @(post.LikedCount <= 1 ? "Like" : "Likes" )</MudText>
+                        }
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        @if (post.IsLiked)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="Color.Secondary" OnClick="(() => OnLikePostAsync(post))" />
+                        }
+                        else
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Secondary" OnClick="(() => OnLikePostAsync(post))" />
+                        }
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardMedia Image="@post.PostImageUri" Height="500" />
+                <MudCardContent>
+                    <MudText Typo="Typo.body1" Class="align-self-center text-white">@post.PostCaption</MudText>
+                </MudCardContent>
+            </MudCard>
+        }
+    </MudContainer>
+}

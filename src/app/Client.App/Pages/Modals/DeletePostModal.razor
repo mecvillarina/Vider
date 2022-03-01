@@ -1,0 +1,20 @@
+﻿
+<MudDialog>
+    <DialogContent>
+        <MudText>Are you sure you want to delete your post?</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" OnClick="Cancel">Cancel</MudButton>
+        <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" OnClick="DeleteAsync" Color="Color.Error">
+            @if (IsProcessing)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                <MudText>DELETE</MudText>
+            }
+        </MudButton>
+
+    </DialogActions>
+</MudDialog>

@@ -1,0 +1,51 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <EditForm Model="@Model" OnValidSubmit="GiftAsync">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <MudDialog DisableSidePadding="false" ClassContent="px-0">
+            <DialogContent>
+                <MudGrid Class="pt-0 pb-4 px-2">
+                    <MudItem xs="12">
+                        <div class="d-flex justify-center">
+                            <MudAvatar Class="flex-grow-1 nft-avatar-image" Rounded="true" Style="height:400px; max-width:400px;" Image="@NFT.Metadata.Uri"></MudAvatar>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudText><b>NFT ID: </b>@NFT.Metadata.Id</MudText>
+                        <MudText><b>NFT Name: </b>@NFT.Metadata.Name</MudText>
+                        <MudText><b>NFT Token ID: </b> <MudText Inline="true" Typo="Typo.caption">@(string.Format("{0}....{1}", NFT.TokenId.Substring(0, 10), NFT.TokenId.Substring(NFT.TokenId.Length - 11, 10))) </MudText></MudText>
+                        <MudText><b>NFT Original Creator: </b>@NFT.Metadata.Creator</MudText>
+                        <MudText><b>NFT Date Minted: </b>@NFT.Metadata.Created.ToLocalTime().ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudTextField T="string" Variant="Variant.Outlined" For="@(() => Model.ReceiverUsername)" Disabled="IsProcessing" @bind-Value="Model.ReceiverUsername" Placeholder="Receiver Username" Label="Receiver Username" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudTextField T="string" Variant="Variant.Outlined" For="@(() => Model.Message)" Disabled="IsProcessing" @bind-Value="Model.Message" Placeholder="Message" Label="Message to receiver" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption" Color="Color.Error"><b>Estimated Gifting Cost: &lt; 0.0001 XRP (100 drops)</b></MudText>
+                    </MudItem>
+                </MudGrid>
+            </DialogContent>
+            <DialogActions>
+                <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" OnClick="Cancel">Cancel</MudButton>
+                <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Primary">
+                    @if (IsProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <MudText>SEND</MudText>
+                    }
+                </MudButton>
+
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+
+</MudContainer>

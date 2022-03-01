@@ -1,0 +1,52 @@
+﻿@page "/auth/login"
+
+@layout AuthLayout
+
+@attribute [AllowAnonymous]
+
+<MudLayout Class="px-8 py-4 my-4">
+    <EditForm Model="@Model" OnValidSubmit="SubmitAsync">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <DataAnnotationsValidator />
+
+        <MudGrid>
+            <MudItem xs="12">
+                <div class="d-flex justify-center">
+                    <img src="@AppConstants.AppLogoDark" style="max-width: 50%; display: block;" />
+                </div>
+                <MudText Typo="Typo.h6" Align="Align.Center">NFT SOCIAL PLATFORM</MudText>
+                <MudText Typo="Typo.body1" Align="Align.Center">Creatives meet Creatives</MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <div>
+                    <MudText Typo="Typo.h6" Align="Align.Center">LOGIN</MudText>
+                </div>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField T="string" Label="Username" Variant="Variant.Filled" Disabled="IsProcessing"
+                              @bind-Value="Model.Username" For="@(() => Model.Username)" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField Label="Password" Variant="Variant.Filled" Disabled="IsProcessing"
+                              @bind-Value="Model.Password" For="@(() => Model.Password)"
+                              InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+            </MudItem>
+            <MudItem xs="12" Class="d-flex justify-space-between align-center">
+                <MudLink Href="/auth/register" Disabled="IsProcessing">Register Account</MudLink>
+            </MudItem>
+            <MudItem xs="12" Class="d-flex justify-center">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Disabled="@IsProcessing" Color="Color.Primary" Size="Size.Large" Style="width: 100%;">
+                    @if (IsProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <MudText>Sign In</MudText>
+                    }
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudLayout>

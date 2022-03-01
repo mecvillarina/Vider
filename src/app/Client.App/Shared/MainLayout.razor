@@ -1,0 +1,44 @@
+﻿@inherits LayoutComponentBase
+
+@namespace Client.App.Shared
+
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MainLayout> localizer
+
+<MudThemeProvider Theme="CurrentTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@if (IsAuthenticated)
+{
+    <MudLayout>
+        <MudAppBar Elevation="0" Dense="false">
+            <MyAppBarContent />
+        </MudAppBar>
+        <MudDrawer @bind-Open="DrawerOpen" Elevation="0" Variant="@DrawerVariant.Mini" ClipMode="DrawerClipMode.Never">
+            @if (!DrawerOpen)
+            {
+                <MudDrawerHeader Class="py-2 px-4">
+                    <img src="@AppConstants.LogoIcon" width="24" height="24" class="my-4" />
+                </MudDrawerHeader>
+            }
+            else
+            {
+                <MudDrawerHeader>
+                    <img src="@AppConstants.AppLogo" width="182" height="50" class="my-4" />
+                </MudDrawerHeader>
+            }
+
+            <MudNavMenu Rounded="true" Margin="Margin.Dense">
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Filled.AccountCircle">My Profile</MudNavLink>
+                <MudNavLink Href="/creators" Match="NavLinkMatch.All" Icon="@Icons.Filled.ColorLens">Creators</MudNavLink>
+                <MudNavLink Href="/feeds" Match="NavLinkMatch.All" Icon="@Icons.Filled.Feed">Feeds</MudNavLink>
+                <MudNavLink Href="/marketplace" Match="NavLinkMatch.All" Icon="@Icons.Filled.Storefront">Marketplace</MudNavLink>
+            </MudNavMenu>
+        </MudDrawer>
+        <MudMainContent>
+            <MudContainer MaxWidth="MaxWidth.False" Class="mt-4 px-0">
+                @Body
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+}

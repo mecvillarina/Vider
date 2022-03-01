@@ -1,0 +1,100 @@
+﻿@page "/auth/register"
+
+@layout AuthLayout
+
+@attribute [AllowAnonymous]
+
+<MudLayout Class="px-8 py-4 my-4">
+    <EditForm Model="@Model" OnValidSubmit="SubmitAsync">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <DataAnnotationsValidator />
+
+        <MudGrid Spacing="2">
+            <MudItem xs="12">
+                <div class="d-flex justify-center">
+                    <img src="@AppConstants.AppLogoDark" style="max-width: 50%; display: block;" />
+                </div>
+                <MudText Typo="Typo.h6" Align="Align.Center">NFT SOCIAL PLATFORM</MudText>
+                <MudText Typo="Typo.body1" Align="Align.Center">Creatives meet Creatives</MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <div>
+                    <MudText Typo="Typo.h6" Align="Align.Center">REGISTER</MudText>
+                </div>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField T="string" Label="Username" Variant="Variant.Filled" Disabled="IsProcessing"
+                              @bind-Value="Model.Username" For="@(() => Model.Username)" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField T="string" Label="Name" Variant="Variant.Filled" Disabled="IsProcessing"
+                              @bind-Value="Model.Name" For="@(() => Model.Name)" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField T="string" Label="Profile Bio" Variant="Variant.Filled" Disabled="IsProcessing"
+                              @bind-Value="Model.Bio" For="@(() => Model.Bio)" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField Label="Password" Variant="Variant.Filled" Disabled="IsProcessing"
+                              @bind-Value="Model.Password" For="@(() => Model.Password)"
+                              InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField Label="Confirm Password" Variant="Variant.Filled" Disabled="IsProcessing"
+                              @bind-Value="Model.ConfirmPassword" For="@(() => Model.ConfirmPassword)"
+                              InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudText Typo="Typo.h6">Wallet Information</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Error">The wallet will be coming from NFT-DEVNET Faucet. The fund are intended for testing only.</MudText>
+
+                @if (Wallet != null)
+                {
+                    <MudText Class="mt-2" Typo="Typo.body1">Address</MudText>
+                    <MudText Typo="Typo.body2">@Wallet.Account.Address</MudText>
+                    <MudText Class="mt-2" Typo="Typo.body1">Secret</MudText>
+                    <MudText Typo="Typo.body2">@Wallet.Account.Secret</MudText>
+
+                    <MudText Class="mt-2" Typo="Typo.body1">Balance</MudText>
+                    <MudText Typo="Typo.body2">@Wallet.Balance.ToString("N2") XRP</MudText>
+                }
+                else
+                {
+                    <MudButton Class="mt-2" FullWidth="true" Variant="Variant.Filled" Disabled="@IsGetWalletProcessing" Color="Color.Secondary" OnClick="OnGetWalletAsync">
+                        @if (IsGetWalletProcessing)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        }
+                        else
+                        {
+                            <MudText>GET XRP WALLET</MudText>
+                        }
+                    </MudButton>
+                }
+            </MudItem>
+
+
+            <MudItem xs="12" Class="d-flex justify-space-between align-center">
+                <MudLink Href="/auth/login" Disabled="IsProcessing">Already have an account?</MudLink>
+            </MudItem>
+
+            <MudItem xs="12" Class="d-flex justify-center">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Disabled="@IsProcessing" Color="Color.Primary" Size="Size.Large" FullWidth="true">
+                    @if (IsProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <MudText>REGISTER</MudText>
+                    }
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudLayout>

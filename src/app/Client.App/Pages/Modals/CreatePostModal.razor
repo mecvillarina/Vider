@@ -1,0 +1,48 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <EditForm Model="@Model" OnValidSubmit="MintAsync">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <MudDialog DisableSidePadding="false" ClassContent="px-0">
+            <DialogContent>
+                <MudGrid Class="pt-0 pb-4 px-2">
+                    <MudItem xs="12">
+                        <div class="d-flex justify-center" style="position:relative" @onmouseover="(() => TogglePhotoOvelay(true))" @onmouseleave="(() => TogglePhotoOvelay(false))">
+                            <MudAvatar Class="flex-grow-1 nft-avatar-image" Rounded="true" Style="height:400px; max-width:400px;" Image="@PhotoLink"></MudAvatar>
+
+                            <InputFile id="Photo2" OnChange="((InputFileChangeEventArgs args) => OnPhotoChange(args))" hidden accept="@Application.Common.Constants.AppConstants.AllowableNFTFormats" />
+
+                            <MudOverlay Visible="IsPhotoOverlayVisible" Absolute="true">
+                                @if (!IsUploadingPhoto)
+                                {
+                                    <MudFab Disabled="IsProcessing" HtmlTag="label" Color="Color.Primary" Size="Size.Large" Icon="@Icons.Filled.FileUpload" for="Photo2" />
+                                }
+                            </MudOverlay>
+
+                            <MudOverlay Visible="IsUploadingPhoto" DarkBackground="true" Absolute="true">
+                                <MudProgressCircular Class="ms-n1" Size="Size.Large" Indeterminate="true" Color="Color.Primary" />
+                            </MudOverlay>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudTextField T="string" Variant="Variant.Outlined" For="@(() => Model.Caption)" Disabled="IsProcessing" @bind-Value="Model.Caption" Placeholder="Caption" Label="Caption" />
+                    </MudItem>
+
+                </MudGrid>
+            </DialogContent>
+            <DialogActions>
+                <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" OnClick="Cancel">Cancel</MudButton>
+                <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Primary">
+                    @if (IsProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <MudText>POST</MudText>
+                    }
+                </MudButton>
+
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+</MudContainer>

@@ -1,0 +1,45 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <MudDialog DisableSidePadding="false" ClassContent="px-0">
+        <DialogContent>
+            <MudGrid Class="pt-0 pb-4 px-2">
+                <MudItem xs="12">
+                    <div class="d-flex justify-center">
+                        <MudAvatar Class="flex-grow-1 nft-avatar-image" Rounded="true" Style="height:400px; max-width:400px;" Image="@Claim.Metadata.Uri"></MudAvatar>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText><b>NFT ID: </b>@Claim.Metadata.Id</MudText>
+                    <MudText><b>NFT Name: </b>@Claim.Metadata.Name</MudText>
+                    <MudText><b>NFT Token ID: </b> <MudText Inline="true">@(string.Format("{0}....{1}", Claim.TokenId.Substring(0, 10), Claim.TokenId.Substring(Claim.TokenId.Length - 11, 10))) </MudText></MudText>
+                    <MudText><b>NFT Original Creator: </b>@Claim.Metadata.Creator</MudText>
+                    <MudText><b>NFT Date Minted: </b>@Claim.Metadata.Created.ToLocalTime().ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText><b>From: </b>@Claim.SenderUsername</MudText>
+                    <MudText><b>Message: </b>@Claim.SenderMessage</MudText>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.caption" Color="Color.Error"><b>Estimated Claiming Cost: &lt; 0.0001 XRP (100 drops)</b></MudText>
+                </MudItem>
+
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" OnClick="Cancel">Cancel</MudButton>
+            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" OnClick="ClaimAsync" Color="Color.Primary">
+                @if (IsProcessing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText>CLAIM</MudText>
+                }
+            </MudButton>
+
+        </DialogActions>
+    </MudDialog>
+</MudContainer>
