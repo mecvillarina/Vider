@@ -18,6 +18,8 @@ As a **creator**,
 ## ARCHITECTURE
 ![](assets/infrastructure.png)
 
+When a creator access the **Vider Web App**, all the API requests will always go through **Vider WebApi Function App (Serverless)**. **Vider WebApi** primarily responsible in handling the saving and fetching of data from the **Azure SQL Database**, saving files (NFT metadata and images) to the **Azure Storage Blob**, sending queue jobs to **Azure Storage Queue** if needed, and establish communication with XRPL Server. **Vider Web Jobs Function App (Serverless)** always listening to the **Azure Storage Queue** to process the job requests and cache the result to the database and store some files to the Storage Blob if necessary.
+
 ## TECHNOLOGIES
 - For the blockchain component, it uses **XRPL (NFT-DEVNET)**. 
 - For Web Frontend, it uses **Blazor Web Assembly (WASM)**. 
