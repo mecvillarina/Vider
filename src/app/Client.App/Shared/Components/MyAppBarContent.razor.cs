@@ -85,12 +85,6 @@ namespace Client.App.Shared.Components
             IsPopulateWalletProcessing = false;
         }
 
-        private void SwitchWalletAddress()
-        {
-            //var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Medium, FullWidth = true, DisableBackdropClick = true };
-            //_dialogService.Show<WalletAddressSelectionModal>("Select Wallet Address", options);
-        }
-
         private void Logout()
         {
             var parameters = new DialogParameters

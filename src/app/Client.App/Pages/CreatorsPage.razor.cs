@@ -96,7 +96,6 @@ namespace Client.App.Pages
 
             var dialog = _dialogService.Show<ViewCreatorProfileModal>($"{creator.Username.ToUpper()}'s Profile", parameters, options);
             await dialog.Result;
-            //await FetchCreatorsAsync();
         }
 
         public async ValueTask DisposeAsync()

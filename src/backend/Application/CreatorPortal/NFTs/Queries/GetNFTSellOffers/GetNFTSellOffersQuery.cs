@@ -45,7 +45,6 @@ namespace Application.CreatorPortal.NFTs.Queries.GetNFTSellOffers
 
                 var sellOffers = await _dbContext.NFTSellOfferItems.AsQueryable()
                     .Where(x => x.SellerAccountValid &&
-                            //(x.SellerId != _context.UserId) &&
                             (x.SellerId == _context.UserId || !x.IsExclusiveForSubscribers || subscriptionIds.Any(y => y == x.SellerId)) &&
                             (string.IsNullOrEmpty(request.Query) || x.SellerUsername.Contains(request.Query.ToLower()) || x.NFTMetadata.Contains(request.Query)))
                     .OrderByDescending(x => x.DatePosted)

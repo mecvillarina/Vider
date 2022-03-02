@@ -5,7 +5,7 @@
 #if DEBUG
         public const string ApiBaseAddress = "http://localhost:7071";
 #elif RELEASE
-        public const string ApiBaseAddress = "https://func-vider-dev.azurewebsites.net";
+        public const string ApiBaseAddress = "";
 #endif
 
     }

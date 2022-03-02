@@ -91,7 +91,6 @@ namespace Application.Queues.Commands.MintNftSubscribeReward
                 var accountNfts = _nftTokenService.GetAccountNFTs(creator.AccountAddress);
                 var accountNft = accountNfts.AccountNfts.First(x => x.Uri == mdUriHexValue);
 
-                //index
                 var uriHex = accountNft.Uri;
                 var uri = new string(uriHex.FromHexStringToString().Reverse().ToArray());
                 _dbContext.NFTIndexes.Add(new NFTIndex()
@@ -126,9 +125,6 @@ namespace Application.Queues.Commands.MintNftSubscribeReward
                 });
 
                 await _dbContext.SaveChangesAsync();
-                //var subscriberAccountSecret = AESExtensions.Decrypt(subscriber.AccountSecret, subscriber.Salt);
-                //var acceptSellOfferResult = _nftTokenService.AcceptSellOffer(subscriber.AccountAddress, subscriberAccountSecret, sellOffer.Index);
-                //if (!acceptSellOfferResult.Succeeded) return await Result.FailAsync(acceptSellOfferResult.Messages);
 
                 return await Result.SuccessAsync();
             }
