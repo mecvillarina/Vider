@@ -25,7 +25,7 @@ namespace WebJob.Timers
 
 
         [FunctionName("GeneralTimers_WalletChecker")]
-        public async Task WalletChecker([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
+        public async Task WalletChecker([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             WalletCheckerCommand commandArg = new();
             await ExecuteAsync<WalletCheckerCommand, IResult>(context, commandArg);
