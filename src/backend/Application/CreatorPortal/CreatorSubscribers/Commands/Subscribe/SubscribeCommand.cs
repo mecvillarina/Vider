@@ -44,12 +44,13 @@ namespace Application.CreatorPortal.CreatorSubscribers.Commands.Subscribe
 
                 if (subscriberId == request.CreatorId) return await Result<int>.FailAsync("Subscribing to yourself is not allowed.");
 
-                var creator = await _identityService.GetAsync(request.CreatorId);
+                var admin = await _identityService.GetAsync("admin");
+                if (admin == null) return await Result<int>.FailAsync("Admin is not exists.");
 
+                var creator = await _identityService.GetAsync(request.CreatorId);
                 if (creator == null) return await Result<int>.FailAsync("Creator is not exists.");
 
                 var subscribe = await _dbContext.CreatorSubscribers.AsQueryable().FirstOrDefaultAsync(x => x.CreatorId == request.CreatorId && x.SubscriberId == subscriberId);
-
                 if (subscribe != null) return await Result<int>.FailAsync($"You have already subscribed with {creator.Name}");
 
                 var creatorAccountInfo = _accountService.AccountInfo(creator.AccountAddress);
@@ -58,10 +59,13 @@ namespace Application.CreatorPortal.CreatorSubscribers.Commands.Subscribe
                 var subscriberAccountInfo = _accountService.AccountInfo(_context.UserAccountAddress);
                 if (subscriberAccountInfo.Status == "error") return await Result<int>.FailAsync($"There's a problem on your wallet: {subscriberAccountInfo.ErrorMessage}");
 
-                var platformPaymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * AppConstants.DropPerXRP * 0.01).ToString(), creator.AccountAddress);
+                var adminAccountInfo = _accountService.AccountInfo(admin.AccountAddress);
+                if (adminAccountInfo.Status == "error") return await Result<int>.FailAsync($"There's a problem on platform wallet: {adminAccountInfo.ErrorMessage}");
+
+                var platformPaymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * 0.01 * AppConstants.DropPerXRP).ToString(), admin.AccountAddress);
                 if (!platformPaymentResult.Succeeded) return await Result<int>.FailAsync(platformPaymentResult.Messages);
 
-                var creatorPaymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * AppConstants.DropPerXRP * 0.99).ToString(), creator.AccountAddress);
+                var creatorPaymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * 0.99 * AppConstants.DropPerXRP ).ToString(), creator.AccountAddress);
                 if (!creatorPaymentResult.Succeeded) return await Result<int>.FailAsync(creatorPaymentResult.Messages);
 
                 var dateNow = _dateTime.UtcNow;
