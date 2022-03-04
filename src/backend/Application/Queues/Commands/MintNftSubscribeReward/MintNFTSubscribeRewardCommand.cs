@@ -55,9 +55,11 @@ namespace Application.Queues.Commands.MintNftSubscribeReward
                 var subscriber = await _identityService.GetAsync(subscriberId);
                 if (subscriber == null) return await Result<int>.FailAsync("Subscriber is not exists.");
 
-                var creatorAccountInfo = _accountService.AccountInfo(creator.AccountAddress);
+                var admin = await _identityService.GetAsync("admin");
+                if (admin == null) return await Result<int>.FailAsync("Admin is not exists.");
 
-                if (creatorAccountInfo.Status == "error") return await Result<int>.FailAsync($"There's a problem on creator wallet: {creatorAccountInfo.ErrorMessage}");
+                var adminAccountInfo = _accountService.AccountInfo(admin.AccountAddress);
+                if (adminAccountInfo.Status == "error") return await Result<int>.FailAsync($"There's a problem on platform wallet: {adminAccountInfo.ErrorMessage}");
 
                 var subscriberAccountInfo = _accountService.AccountInfo(subscriber.AccountAddress);
                 if (subscriberAccountInfo.Status == "error") return await Result<int>.FailAsync($"There's a problem on subscriber wallet: {subscriberAccountInfo.ErrorMessage}");
@@ -83,12 +85,12 @@ namespace Application.Queues.Commands.MintNftSubscribeReward
                 var mdUri = $"{_configuration[SettingKeys.AzureStorageCdn]}/{BlobContainers.NFTMetadata}/{mdFilename}";
                 var mdUriHexValue = mdUri.ToHexString();
 
-                var creatorAccountSecret = AESExtensions.Decrypt(creator.AccountSecret, creator.Salt);
+                var adminAccountSecret = AESExtensions.Decrypt(admin.AccountSecret, admin.Salt);
 
-                var mintResult = _nftTokenService.Mint(creator.AccountAddress, creatorAccountSecret, mdUriHexValue, reward.Taxon, 11);
+                var mintResult = _nftTokenService.Mint(admin.AccountAddress, adminAccountSecret, mdUriHexValue, reward.Taxon, 11);
                 if (!mintResult.Succeeded) return await Result.FailAsync(mintResult.Messages);
 
-                var accountNfts = _nftTokenService.GetAccountNFTs(creator.AccountAddress);
+                var accountNfts = _nftTokenService.GetAccountNFTs(admin.AccountAddress);
                 var accountNft = accountNfts.AccountNfts.First(x => x.Uri == mdUriHexValue);
 
                 var uriHex = accountNft.Uri;
@@ -106,7 +108,7 @@ namespace Application.Queues.Commands.MintNftSubscribeReward
                 });
                 await _dbContext.SaveChangesAsync();
 
-                var createSellOfferResult = _nftTokenService.CreateSellOffer(creator.AccountAddress, creatorAccountSecret, accountNft.TokenId, "0", subscriber.AccountClassicAddress);
+                var createSellOfferResult = _nftTokenService.CreateSellOffer(admin.AccountAddress, adminAccountSecret, accountNft.TokenId, "0", subscriber.AccountClassicAddress);
                 if (!createSellOfferResult.Succeeded) return await Result.FailAsync(createSellOfferResult.Messages);
 
                 var sellOffers = _nftTokenService.GetNftSellOffers(accountNft.TokenId);

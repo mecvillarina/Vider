@@ -20,28 +20,26 @@ namespace Application.CreatorPortal.NFTs.Commands.BuyNFT
             private readonly IXrplAccountService _accountService;
             private readonly IXrplNFTTokenService _tokenService;
             private readonly IApplicationDbContext _dbContext;
-            private readonly IDateTime _dateTime;
 
-            public BuyNFTCommandHandler(ICallContext context, IXrplAccountService accountService, IXrplNFTTokenService tokenService, IApplicationDbContext dbContext, IDateTime dateTime)
+            public BuyNFTCommandHandler(ICallContext context, IXrplAccountService accountService, IXrplNFTTokenService tokenService, IApplicationDbContext dbContext)
             {
                 _context = context;
                 _accountService = accountService;
                 _tokenService = tokenService;
                 _dbContext = dbContext;
-                _dateTime = dateTime;
             }
 
             public async Task<IResult> Handle(BuyNFTCommand request, CancellationToken cancellationToken)
             {
                 var sellOfferItem = await _dbContext.NFTSellOfferItems.AsQueryable().FirstOrDefaultAsync(x => x.SellOfferId == request.Id && x.NFTTokenId == request.TokenId);
 
-                if (sellOfferItem == null) return await Result.FailAsync("No sell offer found. Probably the creator cancelled the sale or someone already bought.");
+                if (sellOfferItem == null) return await Result.FailAsync("No sell offer found. Probably the creator cancelled the sale or someone already bought it.");
 
                 var currentSellOffers = _tokenService.GetNftSellOffers(sellOfferItem.NFTTokenId);
                 if (currentSellOffers.Offers == null || !currentSellOffers.Offers.Any(x => x.Index == sellOfferItem.SellOfferIndex))
                 {
                     await RemoveSaleOffer(sellOfferItem.SellOfferId);
-                    return await Result.FailAsync("No sell offer found. Probably the creator cancelled the sale or someone already bought.");
+                    return await Result.FailAsync("No sell offer found. Probably the creator cancelled the sale or someone already bought it.");
                 }
 
                 var acountInfo = _accountService.AccountInfo(_context.UserAccountAddress);

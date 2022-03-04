@@ -35,6 +35,8 @@ namespace Client.App.Infrastructure.WebServices
 
             try
             {
+                //_debugLogger.Info($"{method} Sending {absoluteRequestUri}");
+
                 HttpResponseMessage response;
 
                 switch (httpVerb)

@@ -18,10 +18,10 @@ namespace Infrastructure.Persistence.Configuration
 
             //migrationBuilder.Sql(@"
             //    CREATE VIEW FeedPostView as
-            //SELECT T1.Id as PostId, T1.Caption as PostCaption, T1.[Filename] as PostFilename, T1.DatePosted as PostDatePosted, T2.Id as CreatorId, T2.Username as CreatorUsername, T2.ProfilePictureFilename as CreatorProfilePictureFilename, T2.IsAccountValid as CreatorIsAccountValid, COUNT(T3.Id) as LikedCount FROM FeedPosts T1
+            //SELECT T1.Id as PostId, T1.Caption as PostCaption, T1.[Filename] as PostFilename, T1.DatePosted as PostDatePosted, T2.Id as CreatorId, T2.Username as CreatorUsername, T2.ProfilePictureFilename as CreatorProfilePictureFilename, T2.IsAccountValid as CreatorIsAccountValid, T2.IsAdmin as CreatorIsAdmin, COUNT(T3.Id) as LikedCount FROM FeedPosts T1
             //JOIN Creators T2 ON T1.PostedById = T2.Id
             //LEFT JOIN FeedPostLikes T3 ON T1.Id = T3.PostId
-            //GROUP BY T1.Id, T1.Caption, T1.[Filename], T1.DatePosted, T2.Id, T2.Username, T2.ProfilePictureFilename, T2.IsAccountValid
+            //GROUP BY T1.Id, T1.Caption, T1.[Filename], T1.DatePosted, T2.Id, T2.Username, T2.ProfilePictureFilename, T2.IsAccountValid, T2.IsAdmin
             //    ");
             //migrationBuilder.Sql(@"
             //    drop view FeedPostView;

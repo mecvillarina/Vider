@@ -94,7 +94,7 @@ namespace Client.App.Shared.Components
                 {nameof(Dialogs.Logout.Color), Color.Error},
             };
 
-            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true, Position = DialogPosition.TopCenter };
 
             _dialogService.Show<Dialogs.Logout>("Logout", parameters, options);
         }

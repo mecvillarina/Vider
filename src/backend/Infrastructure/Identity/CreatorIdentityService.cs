@@ -131,7 +131,7 @@ namespace Infrastructure.Identity
 
         public async Task<Result<AuthTokenHandler>> LoginAsync(string username, string password)
         {
-            var creator = await GetAsync(username);
+            var creator = await _dbContext.Creators.AsQueryable().FirstOrDefaultAsync(u => u.UsernameNormalize == username.ToNormalize());
 
             if (creator != null)
             {

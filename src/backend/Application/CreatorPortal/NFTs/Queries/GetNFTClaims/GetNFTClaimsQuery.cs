@@ -17,12 +17,10 @@ namespace Application.CreatorPortal.NFTs.Queries.GetNFTClaims
         public class GetNFTClaimsQueryHandler : IRequestHandler<GetNFTClaimsQuery, Result<List<NFTClaimDto>>>
         {
             private readonly ICallContext _context;
-            private readonly ICreatorIdentityService _identityService;
             private readonly IXrplNFTTokenService _tokenService;
             private readonly IApplicationDbContext _dbContext;
-            public GetNFTClaimsQueryHandler(ICreatorIdentityService identityService, IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext)
+            public GetNFTClaimsQueryHandler(IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext)
             {
-                _identityService = identityService;
                 _tokenService = tokenService;
                 _context = context;
                 _dbContext = dbContext;
@@ -42,7 +40,7 @@ namespace Application.CreatorPortal.NFTs.Queries.GetNFTClaims
                 {
                     var sellOffers = _tokenService.GetNftSellOffers(claim.TokenId);
 
-                    if (sellOffers.Offers.Any(x => x.Destination == claim.Receiver.AccountAddress))
+                    if (sellOffers.Offers != null && sellOffers.Offers.Any(x => x.Destination == claim.Receiver.AccountAddress))
                     {
                         var nft = _dbContext.NFTIndexes.AsQueryable().FirstOrDefault(x => x.TokenId == claim.TokenId && x.UriHex == claim.UriHex);
 

@@ -35,7 +35,7 @@ namespace Application.CreatorPortal.Feeds.Queries.GetMyPosts
             {
                 request.CreatorId = request.CreatorId > 0 ? request.CreatorId : _context.UserId;
 
-                var posts = await _dbContext.FeedPostItems.AsQueryable().Where(x => x.CreatorIsAccountValid && x.CreatorId == request.CreatorId)
+                var posts = await _dbContext.FeedPostItems.AsQueryable().Where(x => x.CreatorIsAccountValid && !x.CreatorIsAdmin && x.CreatorId == request.CreatorId)
                     .OrderByDescending(x => x.PostDatePosted)
                     .ToListAsync();
 

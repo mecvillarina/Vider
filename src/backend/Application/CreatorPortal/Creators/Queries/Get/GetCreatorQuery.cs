@@ -35,7 +35,7 @@ namespace Application.CreatorPortal.Creators.Queries.Get
 
             public async Task<Result<CreatorDto>> Handle(GetCreatorQuery request, CancellationToken cancellationToken)
             {
-                var creator = _dbContext.CreatorProfiles.AsQueryable().FirstOrDefault(x => x.UsernameNormalize == request.Username.ToNormalize());
+                var creator = _dbContext.CreatorProfiles.AsQueryable().FirstOrDefault(x => !x.IsAdmin && x.UsernameNormalize == request.Username.ToNormalize());
 
                 if (creator == null) return await Result<CreatorDto>.FailAsync("Creator is not exists.");
 

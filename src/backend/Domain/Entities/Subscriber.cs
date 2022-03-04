@@ -7,5 +7,6 @@
         public string SubscriberUsername { get; set; }
         public string SubscriberProfilePictureFilename { get; set; }
         public bool SubscriberIsAccountValid { get; set; }
+        public bool SubscriberIsAdmin { get; set; }
     }
 }

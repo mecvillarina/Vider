@@ -16,13 +16,11 @@ namespace Application.CreatorPortal.NFTs.Commands.BurnNFT
         public class BurnNFTCommandHandler : IRequestHandler<BurnNFTCommand, IResult>
         {
             private readonly ICallContext _context;
-            private readonly ICreatorIdentityService _identityService;
             private readonly IXrplNFTTokenService _tokenService;
             private readonly IApplicationDbContext _dbContext;
 
-            public BurnNFTCommandHandler(ICreatorIdentityService identityService, IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext)
+            public BurnNFTCommandHandler(IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext)
             {
-                _identityService = identityService;
                 _tokenService = tokenService;
                 _context = context;
                 _dbContext = dbContext;

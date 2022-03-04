@@ -31,10 +31,12 @@ namespace Client.App.Pages.Auth
                 }
                 catch (ApiOkFailedException ex)
                 {
+                    await _accountManager.LogoutAsync();
                     _appDialogService.ShowErrors(ex.Messages);
                 }
                 catch (Exception ex)
                 {
+                    await _accountManager.LogoutAsync();
                     _appDialogService.ShowError(ex.Message);
                 }
 

@@ -12,5 +12,6 @@ namespace Domain.Entities
         public string ProfilePictureFilename { get; set; }
         public DateTime DateRegistered { get; set; }
         public int SubscriberCount { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

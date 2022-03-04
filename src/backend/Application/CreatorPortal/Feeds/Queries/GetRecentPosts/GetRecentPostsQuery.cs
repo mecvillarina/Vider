@@ -32,7 +32,7 @@ namespace Application.CreatorPortal.Feeds.Queries.GetRecentPosts
 
             public async Task<Result<List<FeedPostItemDto>>> Handle(GetRecentPostsQuery request, CancellationToken cancellationToken)
             {
-                var posts = await _dbContext.FeedPostItems.AsQueryable().Where(x => x.CreatorIsAccountValid)
+                var posts = await _dbContext.FeedPostItems.AsQueryable().Where(x => x.CreatorIsAccountValid && !x.CreatorIsAdmin)
                     .OrderByDescending(x => x.PostDatePosted)
                     .Take(50)
                     .ToListAsync();

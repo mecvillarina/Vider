@@ -23,16 +23,12 @@ namespace Application.CreatorPortal.NFTs.Queries.GetNFTSellOffers
         public class GetNFTSellOffersQueryHandler : IRequestHandler<GetNFTSellOffersQuery, Result<List<NFTSellOfferItemDto>>>
         {
             private readonly ICallContext _context;
-            private readonly ICreatorIdentityService _identityService;
-            private readonly IXrplNFTTokenService _tokenService;
             private readonly IApplicationDbContext _dbContext;
             private readonly IMapper _mapper;
             private readonly IConfiguration _configuration;
 
-            public GetNFTSellOffersQueryHandler(ICreatorIdentityService identityService, IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext, IMapper mapper, IConfiguration configuration)
+            public GetNFTSellOffersQueryHandler(ICallContext context, IApplicationDbContext dbContext, IMapper mapper, IConfiguration configuration)
             {
-                _identityService = identityService;
-                _tokenService = tokenService;
                 _context = context;
                 _dbContext = dbContext;
                 _mapper = mapper;
@@ -45,6 +41,7 @@ namespace Application.CreatorPortal.NFTs.Queries.GetNFTSellOffers
 
                 var sellOffers = await _dbContext.NFTSellOfferItems.AsQueryable()
                     .Where(x => x.SellerAccountValid &&
+                            //(x.SellerId != _context.UserId) &&
                             (x.SellerId == _context.UserId || !x.IsExclusiveForSubscribers || subscriptionIds.Any(y => y == x.SellerId)) &&
                             (string.IsNullOrEmpty(request.Query) || x.SellerUsername.Contains(request.Query.ToLower()) || x.NFTMetadata.Contains(request.Query)))
                     .OrderByDescending(x => x.DatePosted)

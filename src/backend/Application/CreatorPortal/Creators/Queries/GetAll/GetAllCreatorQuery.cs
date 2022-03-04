@@ -38,7 +38,7 @@ namespace Application.CreatorPortal.Creators.Queries.GetAll
             {
                 var query = request.Query.ToLower();
                 var creators = await _dbContext.CreatorProfiles.AsQueryable()
-                    .Where(x => string.IsNullOrEmpty(query) || x.Username.Contains(query))
+                    .Where(x => !x.IsAdmin && (string.IsNullOrEmpty(query) || x.Username.Contains(query)))
                     .OrderByDescending(x => x.SubscriberCount)
                     .Take(request.Take)
                     .ToListAsync();

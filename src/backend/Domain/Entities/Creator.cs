@@ -14,7 +14,7 @@ namespace Domain.Entities
 
         //XRPL Accounts
         public string AccountXAddress { get; set; }
-        public string AccountSecret { get; set; }
+        public string AccountSecret { get; set; } //Encrypted
         public string AccountClassicAddress { get; set; }
         public string AccountAddress { get; set; }
         public bool IsAccountValid { get; set; }
@@ -23,5 +23,6 @@ namespace Domain.Entities
 
         public DateTime DateAccountAcquired { get; set; }
         public DateTime DateRegistered { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

@@ -9,14 +9,34 @@
     </div>
 </MudContainer>
 
-@if (IsLoaded)
-{
-    <MudContainer MaxWidth="MaxWidth.False" class="d-flex align-center flex-column">
+<MudContainer MaxWidth="MaxWidth.False" class="d-flex align-center flex-column">
+    @if (!IsLoaded)
+    {
+        @for (int i = 0; i < 5; i++)
+        {
+            <MudCard Elevation="5" Class="ma-2 blue-grey darken-3" Style="@CardStyle">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudSkeleton SkeletonType="SkeletonType.Circle" Animation="Animation.Wave" Height="40px" Width="40px" />
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudSkeleton Animation="Animation.Wave" Width="40%" />
+                        <MudSkeleton Animation="Animation.Wave" Width="60%" />
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="500px" Width="100%" />
+                <MudCardContent>
+                    <MudSkeleton Animation="Animation.Wave" Height="24px" />
+                </MudCardContent>
+            </MudCard>
+        }
+    }
+    else
+    {
         <MudButton Class="ma-2" EndIcon="@Icons.Material.Filled.PostAdd" Style="@CardStyle" Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => InvokeCreatePostModalAsync())">Create Post</MudButton>
 
         @foreach (var post in Posts)
         {
-
             <MudCard Elevation="10" Class="ma-2 blue-grey darken-4" Style="@CardStyle">
                 <MudCardHeader>
                     <CardHeaderAvatar>
@@ -55,5 +75,6 @@
                 </MudCardContent>
             </MudCard>
         }
-    </MudContainer>
-}
+    }
+
+</MudContainer>

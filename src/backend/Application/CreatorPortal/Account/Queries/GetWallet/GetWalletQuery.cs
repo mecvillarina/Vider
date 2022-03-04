@@ -1,6 +1,7 @@
 ﻿using Application.Common.Constants;
 using Application.Common.Interfaces;
 using Application.Common.Models;
+using Application.CreatorPortal.Account.Commands.PopulateWallet;
 using AutoMapper;
 using MediatR;
 using System;
@@ -17,12 +18,14 @@ namespace Application.CreatorPortal.Account.Queries.GetWallet
             private readonly ICreatorIdentityService _identityService;
             private readonly IMapper _mapper;
             private readonly IXrplAccountService _accountService;
-            public GetAccountQueryHandler(ICallContext context, ICreatorIdentityService identityService, IMapper mapper, IXrplAccountService accountService)
+            private readonly IMediator _mediator;
+            public GetAccountQueryHandler(ICallContext context, ICreatorIdentityService identityService, IMapper mapper, IXrplAccountService accountService, IMediator mediator)
             {
                 _context = context;
                 _identityService = identityService;
                 _mapper = mapper;
                 _accountService = accountService;
+                _mediator = mediator;
             }
 
             public async Task<Result<GetWalletResponse>> Handle(GetWalletQuery request, CancellationToken cancellationToken)
@@ -34,9 +37,14 @@ namespace Application.CreatorPortal.Account.Queries.GetWallet
                 double actualBalance = 0;
                 if (accountInfo.Error == "actNotFound")
                 {
-                    creator.IsAccountValid = false;
-                    await _identityService.UpdateWalletAsync(creator.Id, creator);
-                    throw new UnauthorizedAccessException();
+                    var populateWalletResult = await _mediator.Send(new PopulateWalletCommand());
+                    if (!populateWalletResult.Succeeded)
+                    {
+                        creator.IsAccountValid = false;
+                        await _identityService.UpdateWalletAsync(creator.Id, creator);
+                        return await Result<GetWalletResponse>.FailAsync("Due to XRP NFTDEV limitation, your account wallet has been expired. To continue, you may create a new account.");
+                    }
+                    accountInfo = _accountService.AccountInfo(creator.AccountAddress);
                 }
 
                 if (accountInfo.Status == "success")

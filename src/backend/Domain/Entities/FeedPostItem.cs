@@ -16,6 +16,9 @@ namespace Domain.Entities
         public string CreatorUsername { get; set; }
         public string CreatorProfilePictureFilename { get; set; }
         public bool CreatorIsAccountValid { get; set; }
+        public bool CreatorIsAdmin { get; set; }
+
         public int LikedCount { get; set; }
+
     }
 }

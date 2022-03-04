@@ -2,7 +2,17 @@
     <MudDialog Class="background" DisableSidePadding="false" ClassContent="px-2 mb-2">
         <DialogContent>
             <MudLayout Class="background pb-4">
-                @if (IsLoaded)
+                @if (!IsLoaded)
+                {
+                    <MudPaper Elevation="0" Class="d-flex flex-column py-4 align-center background">
+                        <MudSkeleton Class="align-self-center ma-4" SkeletonType="SkeletonType.Circle" Animation="Animation.Wave" Height="150px" Width="150px" />
+
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="32px" Width="200px" />
+                        <MudSkeleton Class="my-4" SkeletonType="SkeletonType.Rectangle" Height="24px" Width="400px" />
+
+                    </MudPaper>
+                }
+                else
                 {
                     <MudPaper Elevation="0" Class="d-flex flex-column py-4 align-center background">
                         <MudAvatar Class="align-self-center ma-4" Size="Size.Large" Style="height:150px; width:150px; font-size:2rem; background-color: var(--mud-palette-white);" Image="@Creator.ProfilePictureLink"></MudAvatar>
@@ -60,7 +70,24 @@
                                     <div class="mt-4 d-flex flex-wrap flex-column align-center">
                                         @if (IsFetchingFeeds)
                                         {
-                                            <MudText>Fetching...</MudText>
+                                            for (int i = 0; i < 20; i++)
+                                            {
+                                                <MudCard Elevation="5" Class="my-4 mx-0 blue-grey darken-3" Style="@FeedCardStyle">
+                                                    <MudCardHeader>
+                                                        <CardHeaderAvatar>
+                                                            <MudSkeleton SkeletonType="SkeletonType.Circle" Animation="Animation.Wave" Height="40px" Width="40px" />
+                                                        </CardHeaderAvatar>
+                                                        <CardHeaderContent>
+                                                            <MudSkeleton Animation="Animation.Wave" Width="40%" />
+                                                            <MudSkeleton Animation="Animation.Wave" Width="60%" />
+                                                        </CardHeaderContent>
+                                                    </MudCardHeader>
+                                                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="500px" Width="100%" />
+                                                    <MudCardContent>
+                                                        <MudSkeleton Animation="Animation.Wave" Height="24px" />
+                                                    </MudCardContent>
+                                                </MudCard>
+                                            }
                                         }
                                         else
                                         {
@@ -118,7 +145,23 @@
                                     <div class="mt-4">
                                         @if (IsFetchingNFTs)
                                         {
-                                            <MudText>Fetching...</MudText>
+                                            <div class="@($"d-flex {FlexDirection}")">
+                                                @for (int i = 0; i < 20; i++)
+                                                {
+                                                    <MudCard Elevation="5" Class="mb-4 mr-sm-4 blue-grey darken-3" Style="@NFTCardStyle">
+                                                        <MudCardHeader>
+                                                            <CardHeaderContent>
+                                                                <MudSkeleton Animation="Animation.Wave" Width="40%" />
+                                                            </CardHeaderContent>
+                                                        </MudCardHeader>
+                                                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="300px" Width="100%" />
+                                                        <MudCardContent>
+                                                            <MudSkeleton Animation="Animation.Wave" Height="60px" />
+                                                        </MudCardContent>
+                                                    </MudCard>
+                                                }
+                                            </div>
+
                                         }
                                         else
                                         {

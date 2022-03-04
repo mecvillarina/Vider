@@ -36,9 +36,15 @@
             </MudNavMenu>
         </MudDrawer>
         <MudMainContent>
-            <MudContainer MaxWidth="MaxWidth.False" Class="mt-4 px-0">
+            <MudContainer MaxWidth="MaxWidth.False" Class="mt-4 mb-13 px-0">
                 @Body
             </MudContainer>
         </MudMainContent>
+
+        <MudAppBar Bottom="true" Fixed="true" Elevation="0" Dense="true" Class="px-0" ToolBarClass="px-0">
+            <MudContainer MaxWidth="MaxWidth.False" Class="d-flex justify-center align-center px-4 py-2 red darken4" Style="height:100%">
+                <MudText Align="Align.Center" Typo="Typo.caption">NFT-DEVNET: Ledger, Wallet Balances, and NFTs may reset anytime.</MudText>
+            </MudContainer>
+        </MudAppBar>
     </MudLayout>
 }

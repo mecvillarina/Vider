@@ -33,7 +33,7 @@ namespace Application.Common.Extensions
                 return e.ToString();
             }
 
-            return string.Empty; 
+            return string.Empty; // could also return string.Empty
         }
     }
 }

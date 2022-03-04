@@ -34,7 +34,7 @@ namespace Client.App.Pages.Modals
                     IsProcessing = true;
                     await _exceptionHandler.HandlerRequestTaskAsync(() => NFTManager.SellNFTAsync(Model));
                     await _exceptionHandler.HandlerRequestTaskAsync(() => _accountManager.GetWalletAsync());
-                    _appDialogService.ShowSuccess($"You've successfully created a sell offer for your NFT.");
+                    _appDialogService.ShowSuccess($"You've successfully created a sell offer for your NFT. You can check it out on marketplace.");
                     MudDialog.Close();
                 }
                 catch (ApiOkFailedException ex)

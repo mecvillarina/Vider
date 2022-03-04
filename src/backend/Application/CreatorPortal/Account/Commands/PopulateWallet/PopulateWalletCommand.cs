@@ -27,7 +27,7 @@ namespace Application.CreatorPortal.Account.Commands.PopulateWallet
             {
                 var creator = await _identityService.GetAsync(_context.UserId);
 
-                if (!creator.IsAccountValid)
+                if (creator != null)
                 {
                     var faucetWallet = await _mediator.Send(new GenerateAccountCommand(), cancellationToken);
 
@@ -43,7 +43,7 @@ namespace Application.CreatorPortal.Account.Commands.PopulateWallet
                     }
                 }
 
-                return await Result.SuccessAsync();
+                return await Result.FailAsync();
             }
         }
     }

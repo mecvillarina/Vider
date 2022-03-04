@@ -13,9 +13,9 @@ namespace Infrastructure.Persistence.Configuration
 
             //migrationBuilder.Sql(@"
             //    CREATE VIEW CreatorProfiles as
-            //    SELECT T1.Id, T1.Username, T1.UsernameNormalize, T1.Name, T1.Bio, T1.ProfilePictureFilename, T1.DateRegistered, COUNT(T2.Id) As SubscriberCount FROM Creators T1
+            //    SELECT T1.Id, T1.Username, T1.UsernameNormalize, T1.Name, T1.Bio, T1.ProfilePictureFilename, T1.DateRegistered, T1.IsAdmin, COUNT(T2.Id) As SubscriberCount FROM Creators T1
             //    LEFT JOIN CreatorSubscribers T2 ON T1.Id = T2.CreatorId
-            //    GROUP BY T1.Id,  T1.Username, T1.UsernameNormalize, T1.Name, T1.Bio,T1.ProfilePictureFilename, T1.DateRegistered");
+            //    GROUP BY T1.Id,  T1.Username, T1.UsernameNormalize, T1.Name, T1.Bio,T1.ProfilePictureFilename, T1.DateRegistered, T1.IsAdmin");
 
             //migrationBuilder.Sql(@"
             //    drop view CreatorProfiles;

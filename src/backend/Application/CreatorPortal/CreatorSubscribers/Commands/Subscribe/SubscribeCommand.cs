@@ -58,24 +58,26 @@ namespace Application.CreatorPortal.CreatorSubscribers.Commands.Subscribe
                 var subscriberAccountInfo = _accountService.AccountInfo(_context.UserAccountAddress);
                 if (subscriberAccountInfo.Status == "error") return await Result<int>.FailAsync($"There's a problem on your wallet: {subscriberAccountInfo.ErrorMessage}");
 
-                var paymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * AppConstants.DropPerXRP).ToString(), creator.AccountAddress);
+                var platformPaymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * AppConstants.DropPerXRP * 0.01).ToString(), creator.AccountAddress);
+                if (!platformPaymentResult.Succeeded) return await Result<int>.FailAsync(platformPaymentResult.Messages);
 
-                if (!paymentResult.Succeeded) return await Result<int>.FailAsync(paymentResult.Messages);
+                var creatorPaymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * AppConstants.DropPerXRP * 0.99).ToString(), creator.AccountAddress);
+                if (!creatorPaymentResult.Succeeded) return await Result<int>.FailAsync(creatorPaymentResult.Messages);
 
                 var dateNow = _dateTime.UtcNow;
                 var newSub = new CreatorSubscriber()
                 {
                     CreatorId = request.CreatorId,
                     SubscriberId = subscriberId,
-                    TxHash = paymentResult.Data,
+                    TxHash = creatorPaymentResult.Data,
                     DateSubscribed = dateNow
                 };
 
                 _dbContext.CreatorSubscribers.Add(newSub);
                 await _dbContext.SaveChangesAsync();
 
-                await _domainEventService.Publish(new TransactionLogAddEvent(creator.Id, $"You've receive {AppConstants.SubscriptionCostInXRP} XRP for new subscription from {_context.Username}.", dateNow, paymentResult.Data));
-                await _domainEventService.Publish(new TransactionLogAddEvent(_context.UserId, $"You've successfully subscribed to {creator.Username}. {AppConstants.SubscriptionCostInXRP} + transaction fee in XRP has been deducted from your wallet. ", dateNow, paymentResult.Data));
+                await _domainEventService.Publish(new TransactionLogAddEvent(creator.Id, $"You've receive {AppConstants.SubscriptionCostInXRP} XRP for new subscription from {_context.Username}.", dateNow, creatorPaymentResult.Data));
+                await _domainEventService.Publish(new TransactionLogAddEvent(_context.UserId, $"You've successfully subscribed to {creator.Username}. {AppConstants.SubscriptionCostInXRP} + transaction fee in XRP has been deducted from your wallet. ", dateNow, creatorPaymentResult.Data));
 
                 _queueService.InsertMessage(QueueNames.MintNFTSubscribeReward, JsonConvert.SerializeObject(new MintNFTSubscribeRewardQueueMessage() { CreatorId = creator.Id, SubscriberId = _context.UserId }));
                 var subscriberCount = await _dbContext.CreatorSubscribers.AsQueryable().CountAsync(x => x.CreatorId == creator.Id);

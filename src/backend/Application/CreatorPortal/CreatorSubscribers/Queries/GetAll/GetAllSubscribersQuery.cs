@@ -34,7 +34,7 @@ namespace Application.CreatorPortal.CreatorSubscribers.Queries.GetAll
             public async Task<Result<List<SubscriberDto>>> Handle(GetAllSubscribersQuery request, CancellationToken cancellationToken)
             {
                 var subscribers = await _dbContext.Subscribers.AsQueryable()
-                        .Where(x => x.SubscriberIsAccountValid && x.CreatorId == _callContext.UserId)
+                        .Where(x => x.SubscriberIsAccountValid && !x.SubscriberIsAdmin && x.CreatorId == _callContext.UserId)
                         .ToListAsync();
 
                 var mappedSubscribers = new List<SubscriberDto>();
@@ -48,7 +48,7 @@ namespace Application.CreatorPortal.CreatorSubscribers.Queries.GetAll
                     {
                         profilePictureLink = new Uri($"{_configuration[SettingKeys.AzureStorageCdn]}/{BlobContainers.Creators}/{subscriber.SubscriberProfilePictureFilename}").OriginalString;
                     }
-                    
+
                     mappedSubscriber.Username = subscriber.SubscriberUsername;
                     mappedSubscriber.ProfilePictureLink = profilePictureLink;
                     mappedSubscribers.Add(mappedSubscriber);

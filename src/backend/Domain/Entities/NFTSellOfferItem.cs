@@ -7,6 +7,8 @@ namespace Domain.Entities
         public int SellerId { get; set; }
         public string SellerUsername { get; set; }
         public bool SellerAccountValid { get; set; }
+        public bool SellerIsAdmin { get; set; }
+
         public string SellerProfilePictureFilename { get; set; }
         public string NFTUri { get; set; }
         public string NFTUriHex { get; set; }

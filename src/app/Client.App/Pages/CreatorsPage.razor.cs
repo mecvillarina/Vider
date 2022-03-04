@@ -61,6 +61,7 @@ namespace Client.App.Pages
                 FlexDirection = "flex-wrap flex-row";
             }
         }
+
         private async Task FetchCreatorsAsync(string query = "")
         {
             try
@@ -96,6 +97,7 @@ namespace Client.App.Pages
 
             var dialog = _dialogService.Show<ViewCreatorProfileModal>($"{creator.Username.ToUpper()}'s Profile", parameters, options);
             await dialog.Result;
+            //await FetchCreatorsAsync();
         }
 
         public async ValueTask DisposeAsync()

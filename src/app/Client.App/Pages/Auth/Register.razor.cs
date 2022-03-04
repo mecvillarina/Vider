@@ -42,7 +42,7 @@ namespace Client.App.Pages.Auth
                     Model.AccountClassicAddress = Wallet.Account.ClassicAddress;
                     Model.AccountAddress = Wallet.Account.Address;
                     await _exceptionHandler.HandlerRequestTaskAsync(() => _accountManager.RegisterAsync(Model));
-                    _appDialogService.ShowSuccess(string.Format("Hi {0}, you've successfully registred. Please login to continue.", Model.Username));
+                    _appDialogService.ShowSuccess(string.Format("Hi {0}, you've successfully registered. Please login to continue.", Model.Username));
                     await Task.Delay(1000);
                     _navigationManager.NavigateTo("/", true);
                 }

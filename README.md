@@ -20,6 +20,9 @@ As a **creator**,
 
 When a creator accesses the **Vider Web App**, all the API requests will always go through **Vider WebApi Function App (Serverless)**. **Vider WebApi** primarily responsible in handling the saving and fetching of data from the **Azure SQL Database**, saving files (NFT metadata and images) to the **Azure Storage Blob**, sending queue jobs to **Azure Storage Queue** for **Automatic NFT Reward Minting**, and establish communication with XRPL Server. **Vider Web Jobs Function App (Serverless)** always listen to **Azure Storage Queue** for new job requests and cache the job result to the database and store NFT metadata to the Storage Blob. 
 
+## Automatic NFT Reward Minting
+Currently, when someone subscribe to a creator, he/she needs to pay 25 XRP, 99% of it will go directly to creator's wallet and 1% will go the admin/platform's wallet. If the creator offers an NFT Reward, the admin/platform wallet will use to mint the NFT Reward on behalf of the creator and send it to the subscriber as gift.
+
 ## TECHNOLOGIES
 - For the blockchain component, it uses **XRPL (NFT-DEVNET)**. 
 - For Web Frontend, it uses **Blazor Web Assembly (WASM)**. 
