@@ -35,6 +35,8 @@ namespace Application.CreatorPortal.CreatorSubscribers.Queries.GetAll
             {
                 var subscribers = await _dbContext.Subscribers.AsQueryable()
                         .Where(x => x.SubscriberIsAccountValid && !x.SubscriberIsAdmin && x.CreatorId == _callContext.UserId)
+                        .OrderByDescending(x => x.DateSubscribed)
+                        .Take(100)
                         .ToListAsync();
 
                 var mappedSubscribers = new List<SubscriberDto>();
@@ -51,6 +53,7 @@ namespace Application.CreatorPortal.CreatorSubscribers.Queries.GetAll
 
                     mappedSubscriber.Username = subscriber.SubscriberUsername;
                     mappedSubscriber.ProfilePictureLink = profilePictureLink;
+                    mappedSubscriber.DateSubscribed = subscriber.DateSubscribed;
                     mappedSubscribers.Add(mappedSubscriber);
                 }
 

@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities
+﻿using System;
+
+namespace Domain.Entities
 {
     public class Subscriber
     {
@@ -8,5 +10,6 @@
         public string SubscriberProfilePictureFilename { get; set; }
         public bool SubscriberIsAccountValid { get; set; }
         public bool SubscriberIsAdmin { get; set; }
+        public DateTime DateSubscribed { get; set; }
     }
 }
