@@ -13,7 +13,7 @@
                     <MudItem xs="12">
                         <MudText><b>NFT ID: </b>@NFT.Metadata.Id</MudText>
                         <MudText><b>NFT Name: </b>@NFT.Metadata.Name</MudText>
-                        <MudText><b>NFT Token ID: </b> <MudText Inline="true" Typo="Typo.caption">@(string.Format("{0}....{1}", NFT.TokenId.Substring(0, 10), NFT.TokenId.Substring(NFT.TokenId.Length - 11, 10))) </MudText></MudText>
+                        <MudText><b>NFT Token ID: </b> <MudText Inline="true">@(string.Format("{0}....{1}", NFT.TokenId.Substring(0, 10), NFT.TokenId.Substring(NFT.TokenId.Length - 11, 10))) </MudText></MudText>
                         <MudText><b>NFT Original Creator: </b>@NFT.Metadata.Creator</MudText>
                         <MudText><b>NFT Date Minted: </b>@NFT.Metadata.Created.ToLocalTime().ToString(ClientConstants.LongDateTimeFormat)</MudText>
                     </MudItem>
