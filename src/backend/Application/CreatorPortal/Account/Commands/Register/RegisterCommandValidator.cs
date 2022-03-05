@@ -22,7 +22,7 @@ namespace Application.CreatorPortal.Account.Commands.Register
 
             RuleFor(v => v.Bio)
                 .NotNull().WithMessage("Bio is required.")
-                .MaximumLength(140).WithMessage("Bio must be between 3 and 140 characters long.");
+                .MaximumLength(140).WithMessage("Bio must be less than or equal to 140 characters long.");
 
             RuleFor(v => v.Password)
                 .NotNull().WithMessage("Password is required.")
