@@ -11,7 +11,7 @@ namespace Client.App.Shared
     public partial class AuthLayout
     {
         [Inject] IBreakpointService BreakpointListener { get; set; }
-        public string HeightStyle { get; set; }
+        public string MainContainerClass { get; set; }
         public MudTheme CurrentTheme { get; set; }
         
         private Guid _subscriptionId;
@@ -50,11 +50,11 @@ namespace Client.App.Shared
         {
             if (_currentBreakpoint == Breakpoint.Xs)
             {
-                HeightStyle = "100%";
+                MainContainerClass = "pa-0 ma-0 d-flex align-start justify-center background-dark";
             }
             else
             {
-                HeightStyle = "height: 100vh;";
+                MainContainerClass = "pa-0 ma-0 d-flex align-center justify-center background-dark";
             }
         }
 

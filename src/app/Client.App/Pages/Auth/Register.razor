@@ -4,7 +4,7 @@
 
 @attribute [AllowAnonymous]
 
-<MudLayout Class="px-8 py-4 my-4">
+<MudPaper Elevation="0" Class="px-8 py-8 my-4 background">
     <EditForm Model="@Model" OnValidSubmit="SubmitAsync">
         <FluentValidationValidator @ref="_fluentValidationValidator" />
         <DataAnnotationsValidator />
@@ -97,4 +97,4 @@
             </MudItem>
         </MudGrid>
     </EditForm>
-</MudLayout>
+</MudPaper>
