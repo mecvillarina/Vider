@@ -1,4 +1,4 @@
-﻿<MudContainer MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll; overflow-x:clip">
+﻿<MudContainer MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll;">
     <MudDialog DisableSidePadding="false" ClassContent="px-0">
         <DialogContent>
             <div>
@@ -10,7 +10,7 @@
                 }
                 else
                 {
-                    <MudText>
+                    <MudText Typo="Typo.body2">
                         @((MarkupString)Display.Replace(" ", "&nbsp;").Replace(Environment.NewLine,"<br />"))
                     </MudText>
                 }

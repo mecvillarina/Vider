@@ -477,13 +477,13 @@ namespace Client.App.Pages
 
         private async Task InvokeViewTxModalAsync(string txHash)
         {
-            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.False, FullWidth = true, DisableBackdropClick = false };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true, DisableBackdropClick = false };
             var parameters = new DialogParameters()
             {
                 { nameof(ViewTxModal.TxHash), txHash }
             };
 
-            var dialog = _dialogService.Show<ViewTxModal>($"VIEW XRPL TX - {txHash}", parameters, options);
+            var dialog = _dialogService.Show<ViewTxModal>($"{txHash}", parameters, options);
             var dialogResult = await dialog.Result;
 
             if (!dialogResult.Cancelled)

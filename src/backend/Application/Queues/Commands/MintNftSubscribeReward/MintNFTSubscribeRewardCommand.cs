@@ -129,7 +129,7 @@ namespace Application.Queues.Commands.MintNftSubscribeReward
 
                 await _dbContext.SaveChangesAsync();
 
-                await _domainEventService.Publish(new ActivityLogAddEvent(subscriber.Id, subscriber.AccountAddress, $"Vider Platform has minted and gifted you an NFT on behalf of {creator.Username} as a NFT Reward for subscribing to {creator.Username}. You can claim it anytime on your profile.", _dateTime.UtcNow, createSellOfferResult.Data));
+                await _domainEventService.Publish(new ActivityLogAddEvent(subscriber.Id, subscriber.AccountAddress, $"Vider Platform has minted and gifted you an NFT ({metadata.Id}) on behalf of {creator.Username} as a NFT Reward for subscribing to {creator.Username}. You can claim it anytime on your profile.", _dateTime.UtcNow, createSellOfferResult.Data));
 
                 return await Result.SuccessAsync();
             }

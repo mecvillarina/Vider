@@ -81,7 +81,7 @@ namespace Application.CreatorPortal.CreatorSubscribers.Commands.Subscribe
                 await _dbContext.SaveChangesAsync();
 
                 await _domainEventService.Publish(new ActivityLogAddEvent(creator.Id, creator.AccountAddress, $"You've received {AppConstants.SubscriptionCostInXRP * 0.99} XRP for new subscription from {_context.Username}.", dateNow, creatorPaymentResult.Data));
-                await _domainEventService.Publish(new ActivityLogAddEvent(_context.UserId, creator.AccountAddress, $"You've successfully subscribed to {creator.Username}. {AppConstants.SubscriptionCostInXRP * 0.99} (subscription fee) + {AppConstants.SubscriptionCostInXRP * 0.01} (platform fee) + transaction fee in XRP has been deducted from your wallet. ", dateNow, creatorPaymentResult.Data));
+                await _domainEventService.Publish(new ActivityLogAddEvent(_context.UserId, _context.UserAccountAddress, $"You've successfully subscribed to {creator.Username}. {AppConstants.SubscriptionCostInXRP * 0.99} XRP (subscription fee) + {AppConstants.SubscriptionCostInXRP * 0.01} XRP (platform fee) + transaction fee in XRP has been deducted from your wallet. ", dateNow, creatorPaymentResult.Data));
 
                 _queueService.InsertMessage(QueueNames.MintNFTSubscribeReward, JsonConvert.SerializeObject(new MintNFTSubscribeRewardQueueMessage() { CreatorId = creator.Id, SubscriberId = _context.UserId }));
                 var subscriberCount = await _dbContext.CreatorSubscribers.AsQueryable().CountAsync(x => x.CreatorId == creator.Id);

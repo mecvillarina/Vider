@@ -360,7 +360,7 @@
                                             <MudTh></MudTh>
                                         </HeaderContent>
                                         <RowTemplate>
-                                            <MudTd DataLabel="Date">@context.DateOccured</MudTd>
+                                            <MudTd DataLabel="Date">@context.DateOccured.ToLocalTime().ToString(ClientConstants.LongDateTimeFormat)</MudTd>
                                             <MudTd DataLabel="Event">
                                                 @context.Action
                                             </MudTd>
