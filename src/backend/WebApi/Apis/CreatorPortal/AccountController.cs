@@ -6,6 +6,8 @@ using Application.CreatorPortal.Account.Commands.Register;
 using Application.CreatorPortal.Account.Commands.UploadProfilePicture;
 using Application.CreatorPortal.Account.Queries.GetWallet;
 using Application.CreatorPortal.Account.Queries.MyProfile;
+using Application.CreatorPortal.Activities.Dtos;
+using Application.CreatorPortal.Activities.Queries.GetRecent;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -78,6 +81,14 @@ namespace WebApi.Apis.CreatorPortal
             EnsureAuthorization(req);
             return await ExecuteAsync<PopulateWalletCommand, IResult>(context, logger, req, commandArgs);
         }
+
+        [FunctionName("CreatorPortal_Account_RecentActivities")]
+        public async Task<IActionResult> GetRecentActivities([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "creatorportal/account/activity")] GetRecentActivityLogsQuery queryArgs, HttpRequest req, ExecutionContext context, ILogger logger)
+        {
+            EnsureAuthorization(req);
+            return await ExecuteAsync<GetRecentActivityLogsQuery, Result<List<ActivityLogDto>>>(context, logger, req, queryArgs);
+        }
+
 
     }
 }

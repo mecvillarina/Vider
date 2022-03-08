@@ -6,6 +6,7 @@ namespace Application.Common.Interfaces
 {
     public interface IXrplNFTTokenService
     {
+        XrplTxResultDto GetTx(string hash);
         NFTMetadata GetMetadataContent(string uri);
         XrplAccountNFTResultDto GetAccountNFTs(string address);
         XrplNFTSellOfferResultDto GetNftSellOffers(string tokenId);

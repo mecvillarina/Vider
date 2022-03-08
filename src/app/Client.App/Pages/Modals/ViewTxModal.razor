@@ -1,0 +1,20 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll; overflow-x:clip">
+    <MudDialog DisableSidePadding="false" ClassContent="px-0">
+        <DialogContent>
+            <div>
+                @if (!IsLoaded)
+                {
+                    <div>
+                        <MudSkeleton Animation="Animation.Wave" Height="100px" Width="100%" />
+                    </div>
+                }
+                else
+                {
+                    <MudText>
+                        @((MarkupString)Display.Replace(" ", "&nbsp;").Replace(Environment.NewLine,"<br />"))
+                    </MudText>
+                }
+            </div>
+        </DialogContent>
+    </MudDialog>
+</MudContainer>

@@ -5,9 +5,11 @@ using Application.CreatorPortal.Account.Commands.Register;
 using Application.CreatorPortal.Account.Commands.UploadProfilePicture;
 using Application.CreatorPortal.Account.Queries.GetWallet;
 using Application.CreatorPortal.Account.Queries.MyProfile;
+using Application.CreatorPortal.Activities.Dtos;
 using Client.App.Infrastructure.WebServices;
 using Client.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -98,6 +100,12 @@ namespace Client.App.Infrastructure.Managers
             ((AppStateProvider)_authenticationStateProvider).MarkUserAsLoggedOut();
             await _appRouteViewService.Populate();
             return await Result.SuccessAsync();
+        }
+
+        public async Task<IResult<List<ActivityLogDto>>> GetRecentActivitiesAsync()
+        {
+            await PrepareForWebserviceCall();
+            return await _accountWebService.GetRecentActivitiesAsync(AccessToken);
         }
     }
 }

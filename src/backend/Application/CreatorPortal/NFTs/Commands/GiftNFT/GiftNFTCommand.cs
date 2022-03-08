@@ -1,9 +1,10 @@
-﻿using Application.Common.Extensions;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.Common.Models;
 using Domain.Entities;
+using Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,13 +24,17 @@ namespace Application.CreatorPortal.NFTs.Commands.GiftNFT
             private readonly ICreatorIdentityService _identityService;
             private readonly IXrplNFTTokenService _tokenService;
             private readonly IApplicationDbContext _dbContext;
+            private readonly IDomainEventService _domainEventService;
+            private readonly IDateTime _dateTime;
 
-            public GiftNFTCommandHandler(ICreatorIdentityService identityService, IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext)
+            public GiftNFTCommandHandler(ICreatorIdentityService identityService, IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext, IDomainEventService domainEventService, IDateTime dateTime)
             {
                 _identityService = identityService;
                 _tokenService = tokenService;
                 _context = context;
                 _dbContext = dbContext;
+                _domainEventService = domainEventService;
+                _dateTime = dateTime;
             }
 
             public async Task<IResult> Handle(GiftNFTCommand request, CancellationToken cancellationToken)
@@ -50,7 +55,7 @@ namespace Application.CreatorPortal.NFTs.Commands.GiftNFT
                 if (!accountNftsResult.AccountNfts.Any(x => x.Uri == nft.UriHex && x.TokenId == nft.TokenId)) return await Result.FailAsync("No giftable NFT found.");
 
                 var currentSellOffers = _tokenService.GetNftSellOffers(nft.TokenId);
-                if(currentSellOffers.Offers != null && currentSellOffers.Offers.Any()) return await Result.FailAsync("No giftable NFT found.");
+                if (currentSellOffers.Offers != null && currentSellOffers.Offers.Any()) return await Result.FailAsync("No giftable NFT found.");
 
                 var createSellOfferResult = _tokenService.CreateSellOffer(_context.UserAccountAddress, _context.UserAccountSecret, nft.TokenId, "0", receiver.AccountClassicAddress);
                 if (!createSellOfferResult.Succeeded) return await Result.FailAsync(createSellOfferResult.Messages);
@@ -71,6 +76,11 @@ namespace Application.CreatorPortal.NFTs.Commands.GiftNFT
                 });
 
                 await _dbContext.SaveChangesAsync();
+
+                var metadata = JsonConvert.DeserializeObject<NFTMetadata>(nft.Metadata);
+                await _domainEventService.Publish(new ActivityLogAddEvent(_context.UserId, _context.UserAccountAddress, $"You've gifted {receiver.Username} an NFT ({metadata.Id}).", _dateTime.UtcNow, createSellOfferResult.Data));
+                await _domainEventService.Publish(new ActivityLogAddEvent(receiver.Id, receiver.AccountAddress, $"{_context.Username} gifted you an NFT ({metadata.Id}). You can claim it anytime on your profile.", _dateTime.UtcNow, createSellOfferResult.Data));
+
                 return await Result.SuccessAsync();
             }
         }

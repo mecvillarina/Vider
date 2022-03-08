@@ -2,6 +2,7 @@
 {
     public static class NFTEndpoints
     {
+        public const string GetTx = "api/creatorportal/nfts/tx?txHash={0}";
         public const string GetCreatorNFTs = "api/creatorportal/nfts/creatorNFTs?creatorId={0}";
         public const string GetNFTClaims = "api/creatorportal/nfts/claims";
         public const string GetNFTSellOffers = "api/creatorportal/nfts/selloffers?query={0}";

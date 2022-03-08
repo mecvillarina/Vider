@@ -5,6 +5,7 @@ namespace Domain.Entities
     public class NFTSellOfferItem
     {
         public int SellerId { get; set; }
+        public string SellerAccountAddress { get; set; }
         public string SellerUsername { get; set; }
         public bool SellerAccountValid { get; set; }
         public bool SellerIsAdmin { get; set; }

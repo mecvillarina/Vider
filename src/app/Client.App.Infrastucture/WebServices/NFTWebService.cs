@@ -1,4 +1,5 @@
-﻿using Application.Common.Models;
+﻿using Application.Common.Dtos.Response;
+using Application.Common.Models;
 using Application.CreatorPortal.NFTs.Commands.BurnNFT;
 using Application.CreatorPortal.NFTs.Commands.BuyNFT;
 using Application.CreatorPortal.NFTs.Commands.CancelSellNFT;
@@ -21,6 +22,7 @@ namespace Client.App.Infrastructure.WebServices
         {
         }
 
+        public Task<IResult<string>> GetTxAsync(string txHash, string accessToken) => GetAsync<string>(string.Format(NFTEndpoints.GetTx, txHash), accessToken);
         public Task<IResult<List<NFTItemDto>>> GetCreatorNFTsAsync(int creatorId, string accessToken) => GetAsync<List<NFTItemDto>>(string.Format(NFTEndpoints.GetCreatorNFTs, creatorId), accessToken);
         public Task<IResult<List<NFTClaimDto>>> GetNFTClaimsAsync(string accessToken) => GetAsync<List<NFTClaimDto>>(NFTEndpoints.GetNFTClaims, accessToken);
         public Task<IResult<List<NFTSellOfferItemDto>>> GetNFTSellOffersAsync(string query, string accessToken) => GetAsync<List<NFTSellOfferItemDto>>(string.Format(NFTEndpoints.GetNFTSellOffers, query), accessToken);

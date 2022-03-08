@@ -2,8 +2,10 @@
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using Domain.Entities;
+using Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,12 +25,15 @@ namespace Application.CreatorPortal.NFTs.Commands.SellNFT
             private readonly IXrplNFTTokenService _tokenService;
             private readonly IApplicationDbContext _dbContext;
             private readonly IDateTime _dateTime;
-            public SellNFTCommandHandler(IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext, IDateTime dateTime)
+            private readonly IDomainEventService _domainEventService;
+
+            public SellNFTCommandHandler(IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext, IDateTime dateTime, IDomainEventService domainEventService)
             {
                 _tokenService = tokenService;
                 _context = context;
                 _dbContext = dbContext;
                 _dateTime = dateTime;
+                _domainEventService = domainEventService;
             }
 
             public async Task<IResult> Handle(SellNFTCommand request, CancellationToken cancellationToken)
@@ -75,6 +80,10 @@ namespace Application.CreatorPortal.NFTs.Commands.SellNFT
                 });
 
                 await _dbContext.SaveChangesAsync();
+
+                var metadata = JsonConvert.DeserializeObject<NFTMetadata>(nft.Metadata);
+                await _domainEventService.Publish(new ActivityLogAddEvent(_context.UserId, _context.UserAccountAddress, $"You've created a sell offer for your NFT ({metadata.Id}) for {request.Amount} XRP.", _dateTime.UtcNow, createSellOfferResult.Data));
+
                 return await Result.SuccessAsync();
             }
         }

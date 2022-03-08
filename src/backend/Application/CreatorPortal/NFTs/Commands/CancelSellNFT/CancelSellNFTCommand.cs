@@ -1,7 +1,9 @@
 ﻿using Application.Common.Interfaces;
 using Application.Common.Models;
+using Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,12 +21,15 @@ namespace Application.CreatorPortal.NFTs.Commands.CancelSellNFT
             private readonly IXrplNFTTokenService _tokenService;
             private readonly IApplicationDbContext _dbContext;
             private readonly IDateTime _dateTime;
-            public CancelSellNFTCommandHandler(IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext, IDateTime dateTime)
+            private readonly IDomainEventService _domainEventService;
+
+            public CancelSellNFTCommandHandler(IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext, IDateTime dateTime, IDomainEventService domainEventService)
             {
                 _tokenService = tokenService;
                 _context = context;
                 _dbContext = dbContext;
                 _dateTime = dateTime;
+                _domainEventService = domainEventService;
             }
 
             public async Task<IResult> Handle(CancelSellNFTCommand request, CancellationToken cancellationToken)
@@ -52,6 +57,9 @@ namespace Application.CreatorPortal.NFTs.Commands.CancelSellNFT
                 if (!cancelSellOfferResult.Succeeded) return await Result.FailAsync(cancelSellOfferResult.Messages);
 
                 await RemoveIndexSellOffersAsync(request.TokenId);
+
+                var metadata = JsonConvert.DeserializeObject<NFTMetadata>(nft.Metadata);
+                await _domainEventService.Publish(new ActivityLogAddEvent(_context.UserId, _context.UserAccountAddress, $"You've cancelled the sell offer of your NFT ({metadata.Id}).", _dateTime.UtcNow, cancelSellOfferResult.Data));
 
                 return await Result.SuccessAsync();
             }

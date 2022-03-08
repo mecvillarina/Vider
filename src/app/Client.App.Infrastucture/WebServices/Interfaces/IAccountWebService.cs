@@ -5,6 +5,8 @@ using Application.CreatorPortal.Account.Commands.Register;
 using Application.CreatorPortal.Account.Commands.UploadProfilePicture;
 using Application.CreatorPortal.Account.Queries.GetWallet;
 using Application.CreatorPortal.Account.Queries.MyProfile;
+using Application.CreatorPortal.Activities.Dtos;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -18,6 +20,6 @@ namespace Client.App.Infrastructure.WebServices
         Task<IResult> UploadPhotoAsync(UploadProfilePictureCommand request, Stream fileStream, string filename, string accessToken);
         Task<IResult<GetWalletResponse>> GetWalletAsync(string accessToken);
         Task<IResult> PopulateWalletAsync(PopulateWalletCommand request, string accessToken);
-
+        Task<IResult<List<ActivityLogDto>>> GetRecentActivitiesAsync(string accessToken);
     }
 }

@@ -1,7 +1,10 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Constants;
+using Application.Common.Interfaces;
 using Application.Common.Models;
+using Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading;
@@ -20,13 +23,17 @@ namespace Application.CreatorPortal.NFTs.Commands.BuyNFT
             private readonly IXrplAccountService _accountService;
             private readonly IXrplNFTTokenService _tokenService;
             private readonly IApplicationDbContext _dbContext;
+            private readonly IDomainEventService _domainEventService;
+            private readonly IDateTime _dateTime;
 
-            public BuyNFTCommandHandler(ICallContext context, IXrplAccountService accountService, IXrplNFTTokenService tokenService, IApplicationDbContext dbContext)
+            public BuyNFTCommandHandler(ICallContext context, IXrplAccountService accountService, IXrplNFTTokenService tokenService, IApplicationDbContext dbContext, IDomainEventService domainEventService, IDateTime dateTime)
             {
                 _context = context;
                 _accountService = accountService;
                 _tokenService = tokenService;
                 _dbContext = dbContext;
+                _domainEventService = domainEventService;
+                _dateTime = dateTime;
             }
 
             public async Task<IResult> Handle(BuyNFTCommand request, CancellationToken cancellationToken)
@@ -56,6 +63,12 @@ namespace Application.CreatorPortal.NFTs.Commands.BuyNFT
                 if (!buySellOfferResult.Succeeded) return await Result.FailAsync(buySellOfferResult.Messages);
 
                 await RemoveSaleOffer(sellOfferItem.SellOfferId);
+
+                var metadata = JsonConvert.DeserializeObject<NFTMetadata>(sellOfferItem.NFTMetadata);
+
+                await _domainEventService.Publish(new ActivityLogAddEvent(_context.UserId, _context.UserAccountAddress, $"You've accepted {sellOfferItem.SellerUsername}'s NFT ({metadata.Id}) sell offer and bought it for {Convert.ToDouble(sellOfferItem.Amount) / AppConstants.DropPerXRP} XRP.", _dateTime.UtcNow, buySellOfferResult.Data));
+                await _domainEventService.Publish(new ActivityLogAddEvent(sellOfferItem.SellerId, sellOfferItem.SellerAccountAddress, $"{_context.Username} accepted your sell offer and bought your NFT ({metadata.Id}) for {Convert.ToDouble(sellOfferItem.Amount) / AppConstants.DropPerXRP} XRP.", _dateTime.UtcNow, buySellOfferResult.Data));
+
                 return await Result.SuccessAsync();
             }
 

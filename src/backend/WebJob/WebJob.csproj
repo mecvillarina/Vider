@@ -6,22 +6,6 @@
     <RootNamespace>WebJob</RootNamespace>
     <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Files\email-template-generic-with-link.html" />
-    <None Remove="Files\email-template-generic.html" />
-    <None Remove="Files\email-template-qrcodesending.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Files\email-template-generic.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\email-template-generic-with-link.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\email-template-qrcodesending.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="9.0.0" />

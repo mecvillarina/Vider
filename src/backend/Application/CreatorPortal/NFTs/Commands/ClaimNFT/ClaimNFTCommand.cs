@@ -1,7 +1,7 @@
-﻿using Application.Common.Extensions;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.Common.Models;
 using Domain.Entities;
+using Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -20,12 +20,16 @@ namespace Application.CreatorPortal.NFTs.Commands.ClaimNFT
             private readonly ICallContext _context;
             private readonly IXrplNFTTokenService _tokenService;
             private readonly IApplicationDbContext _dbContext;
+            private readonly IDomainEventService _domainEventService;
+            private readonly IDateTime _dateTime;
 
-            public ClaimNFTCommandHandler(IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext)
+            public ClaimNFTCommandHandler(IXrplNFTTokenService tokenService, ICallContext context, IApplicationDbContext dbContext, IDomainEventService domainEventService, IDateTime dateTime)
             {
                 _tokenService = tokenService;
                 _context = context;
                 _dbContext = dbContext;
+                _domainEventService = domainEventService;
+                _dateTime = dateTime;
             }
 
             public async Task<IResult> Handle(ClaimNFTCommand request, CancellationToken cancellationToken)
@@ -41,14 +45,22 @@ namespace Application.CreatorPortal.NFTs.Commands.ClaimNFT
                     return await Result.FailAsync("No claimable NFT found.");
                 }
 
-                var accountSellOffer = sellOffers.Offers.Where(x => x.Destination == _context.UserAccountAddress).ToList();
-                foreach (var sellOffer in accountSellOffer)
+                var accountSellOffers = sellOffers.Offers.Where(x => x.Destination == _context.UserAccountAddress).ToList();
+                string txHash = null;
+                foreach (var sellOffer in accountSellOffers)
                 {
                     var acceptSellOfferResult = _tokenService.AcceptSellOffer(_context.UserAccountAddress, _context.UserAccountSecret, sellOffer.Index);
                     if (!acceptSellOfferResult.Succeeded) return await Result.FailAsync(acceptSellOfferResult.Messages);
+                    txHash = acceptSellOfferResult.Data;
                 }
 
                 await RemoveNFTClaimsAsync(claim);
+
+                if (accountSellOffers.Any())
+                {
+                    await _domainEventService.Publish(new ActivityLogAddEvent(_context.UserId, _context.UserAccountAddress, $"You've claimed an NFT. ", _dateTime.UtcNow, txHash));
+                }
+
                 return await Result.SuccessAsync();
             }
 

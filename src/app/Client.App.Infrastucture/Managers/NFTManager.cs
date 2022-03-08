@@ -1,4 +1,5 @@
-﻿using Application.Common.Models;
+﻿using Application.Common.Dtos.Response;
+using Application.Common.Models;
 using Application.CreatorPortal.NFTs.Commands.BurnNFT;
 using Application.CreatorPortal.NFTs.Commands.BuyNFT;
 using Application.CreatorPortal.NFTs.Commands.CancelSellNFT;
@@ -19,6 +20,12 @@ namespace Client.App.Infrastructure.Managers
         public NFTManager(IManagerToolkit managerToolkit, INFTWebService creatorNftWebService) : base(managerToolkit)
         {
             _nftWebService = creatorNftWebService;
+        }
+
+        public async Task<IResult<string>> GetTxAsync(string txHash)
+        {
+            await PrepareForWebserviceCall();
+            return await _nftWebService.GetTxAsync(txHash, AccessToken);
         }
 
         public async Task<IResult<List<NFTItemDto>>> GetCreatorNFTsAsync(int creatorId = 0)

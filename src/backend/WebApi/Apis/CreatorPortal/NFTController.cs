@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Dtos.Response;
+using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.CreatorPortal.NFTs.Commands.BurnNFT;
 using Application.CreatorPortal.NFTs.Commands.BuyNFT;
@@ -11,6 +12,7 @@ using Application.CreatorPortal.NFTs.Dtos;
 using Application.CreatorPortal.NFTs.Queries.GetCreatorNFTs;
 using Application.CreatorPortal.NFTs.Queries.GetNFTClaims;
 using Application.CreatorPortal.NFTs.Queries.GetNFTSellOffers;
+using Application.CreatorPortal.NFTs.Queries.GetTx;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +30,13 @@ namespace WebApi.Apis.CreatorPortal
     {
         public NFTController(IConfiguration configuration, IMediator mediator, ICallContext context) : base(configuration, mediator, context)
         {
+        }
+
+        [FunctionName("CreatorPortal_NFT_TX")]
+        public async Task<IActionResult> GetTx([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "creatorportal/nfts/tx")] GetTxQuery queryArgs, HttpRequest req, ExecutionContext context, ILogger logger)
+        {
+            EnsureAuthorization(req);
+            return await ExecuteAsync<GetTxQuery, Result<string>>(context, logger, req, queryArgs);
         }
 
         [FunctionName("CreatorPortal_NFT_GetCreatorNFTs")]

@@ -11,7 +11,7 @@ namespace Application.Common.Interfaces
         DbSet<CreatorPassword> CreatorPasswords { get; set; }
         DbSet<CreatorSubscriber> CreatorSubscribers { get; set; }
         DbSet<CreatorProfile> CreatorProfiles { get; set; }
-        DbSet<TransactionLog> TransactionLogs { get; set; }
+        DbSet<ActivityLog> ActivityLogs { get; set; }
         DbSet<CreatorReward> CreatorRewards { get; set; }
         DbSet<NFTIndex> NFTIndexes { get; set; }
         DbSet<NFTClaim> NFTClaims { get; set; }

@@ -8,5 +8,7 @@
         public const string UploadPhoto = "api/creatorportal/account/profile/photo";
         public const string Wallet = "api/creatorportal/account/wallet";
         public const string PopulateWallet = "api/creatorportal/account/wallet/populate";
+        public const string GetRecentActivities = "api/creatorportal/account/activity";
+
     }
 }

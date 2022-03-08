@@ -39,7 +39,7 @@ namespace Infrastructure.Persistence
         public DbSet<FeedPostItem> FeedPostItems { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
 
-        public DbSet<TransactionLog> TransactionLogs { get; set; }
+        public DbSet<ActivityLog> ActivityLogs { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

@@ -1,4 +1,5 @@
 ﻿using Application.CreatorPortal.Account.Queries.MyProfile;
+using Application.CreatorPortal.Activities.Dtos;
 using Application.CreatorPortal.CreatorRewards.Queries.GetRewards;
 using Application.CreatorPortal.Creators.Dtos;
 using Application.CreatorPortal.Feeds.Commands.DeletePost;
@@ -48,6 +49,7 @@ namespace Client.App.Pages
         public bool IsFetchingNFTClaims { get; set; }
         public bool IsFetchingFeeds { get; set; }
         public bool IsFetchingSubscribers { get; set; }
+        public bool IsFetchingActivities { get; set; }
 
         public bool IsProfilePhotoOverlayVisible { get; set; }
         public bool IsUploadingProfilePhoto { get; set; }
@@ -56,6 +58,7 @@ namespace Client.App.Pages
         public List<NFTClaimDto> NFTClaims { get; set; } = new();
         public List<FeedPostItemDto> Posts { get; set; } = new();
         public List<SubscriberDto> Subscribers { get; set; } = new();
+        public List<ActivityLogDto> Activities { get; set; } = new();
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -113,6 +116,7 @@ namespace Client.App.Pages
                 case 2: await FetchNFTClaimsAsync(); break;
                 case 3: await FetchSubscriberAsync(); break;
                 case 4: await FetchFeedPostsAsync(); break;
+                case 5: await FetchActivitiesAsync(); break;
             }
         }
         private async Task FetchProfileAsync()
@@ -260,6 +264,32 @@ namespace Client.App.Pages
             }
         }
 
+        private async Task FetchActivitiesAsync()
+        {
+            try
+            {
+                if (IsFetchingActivities) return;
+
+                IsFetchingActivities = true;
+                await InvokeAsync(StateHasChanged);
+                var activitiesResult = await _exceptionHandler.HandlerRequestTaskAsync(() => _accountManager.GetRecentActivitiesAsync());
+                Activities = activitiesResult.Data;
+            }
+            catch (ApiOkFailedException ex)
+            {
+                _appDialogService.ShowErrors(ex.Messages);
+            }
+            catch (Exception ex)
+            {
+                _appDialogService.ShowError(ex.Message);
+            }
+            finally
+            {
+                Activities ??= new();
+                IsFetchingActivities = false;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
         private async Task OnProfilePictureChange(InputFileChangeEventArgs e)
         {
             long maxFileSize = 1024 * 1024 * 10;
@@ -405,7 +435,7 @@ namespace Client.App.Pages
                 { nameof(CancelSellNFTModal.Model), new CancelSellNFTCommand() { Id = nft.Id, TokenId = nft.TokenId } },
             };
 
-            var dialog = _dialogService.Show<CancelSellNFTModal>($"CANCEL SELL OF YOUR NFT", parameters, options);
+            var dialog = _dialogService.Show<CancelSellNFTModal>($"CANCEL NFT SELL", parameters, options);
             var dialogResult = await dialog.Result;
 
             if (!dialogResult.Cancelled)
@@ -444,6 +474,24 @@ namespace Client.App.Pages
                 await FetchFeedPostsAsync();
             }
         }
+
+        private async Task InvokeViewTxModalAsync(string txHash)
+        {
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.False, FullWidth = true, DisableBackdropClick = false };
+            var parameters = new DialogParameters()
+            {
+                { nameof(ViewTxModal.TxHash), txHash }
+            };
+
+            var dialog = _dialogService.Show<ViewTxModal>($"VIEW XRPL TX - {txHash}", parameters, options);
+            var dialogResult = await dialog.Result;
+
+            if (!dialogResult.Cancelled)
+            {
+                await FetchFeedPostsAsync();
+            }
+        }
+
 
         public async ValueTask DisposeAsync()
         {

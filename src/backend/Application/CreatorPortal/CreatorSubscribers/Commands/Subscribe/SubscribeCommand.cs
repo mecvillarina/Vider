@@ -65,7 +65,7 @@ namespace Application.CreatorPortal.CreatorSubscribers.Commands.Subscribe
                 var platformPaymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * 0.01 * AppConstants.DropPerXRP).ToString(), admin.AccountAddress);
                 if (!platformPaymentResult.Succeeded) return await Result<int>.FailAsync(platformPaymentResult.Messages);
 
-                var creatorPaymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * 0.99 * AppConstants.DropPerXRP ).ToString(), creator.AccountAddress);
+                var creatorPaymentResult = _paymentService.Pay(_context.UserAccountAddress, _context.UserAccountSecret, (AppConstants.SubscriptionCostInXRP * 0.99 * AppConstants.DropPerXRP).ToString(), creator.AccountAddress);
                 if (!creatorPaymentResult.Succeeded) return await Result<int>.FailAsync(creatorPaymentResult.Messages);
 
                 var dateNow = _dateTime.UtcNow;
@@ -80,8 +80,8 @@ namespace Application.CreatorPortal.CreatorSubscribers.Commands.Subscribe
                 _dbContext.CreatorSubscribers.Add(newSub);
                 await _dbContext.SaveChangesAsync();
 
-                await _domainEventService.Publish(new TransactionLogAddEvent(creator.Id, $"You've receive {AppConstants.SubscriptionCostInXRP} XRP for new subscription from {_context.Username}.", dateNow, creatorPaymentResult.Data));
-                await _domainEventService.Publish(new TransactionLogAddEvent(_context.UserId, $"You've successfully subscribed to {creator.Username}. {AppConstants.SubscriptionCostInXRP} + transaction fee in XRP has been deducted from your wallet. ", dateNow, creatorPaymentResult.Data));
+                await _domainEventService.Publish(new ActivityLogAddEvent(creator.Id, creator.AccountAddress, $"You've received {AppConstants.SubscriptionCostInXRP * 0.99} XRP for new subscription from {_context.Username}.", dateNow, creatorPaymentResult.Data));
+                await _domainEventService.Publish(new ActivityLogAddEvent(_context.UserId, creator.AccountAddress, $"You've successfully subscribed to {creator.Username}. {AppConstants.SubscriptionCostInXRP * 0.99} (subscription fee) + {AppConstants.SubscriptionCostInXRP * 0.01} (platform fee) + transaction fee in XRP has been deducted from your wallet. ", dateNow, creatorPaymentResult.Data));
 
                 _queueService.InsertMessage(QueueNames.MintNFTSubscribeReward, JsonConvert.SerializeObject(new MintNFTSubscribeRewardQueueMessage() { CreatorId = creator.Id, SubscriberId = _context.UserId }));
                 var subscriberCount = await _dbContext.CreatorSubscribers.AsQueryable().CountAsync(x => x.CreatorId == creator.Id);

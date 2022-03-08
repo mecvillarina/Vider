@@ -4,6 +4,7 @@ using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.QueueMessages;
 using Domain.Entities;
+using Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -127,6 +128,8 @@ namespace Application.Queues.Commands.MintNftSubscribeReward
                 });
 
                 await _dbContext.SaveChangesAsync();
+
+                await _domainEventService.Publish(new ActivityLogAddEvent(subscriber.Id, subscriber.AccountAddress, $"Vider Platform has minted and gifted you an NFT on behalf of {creator.Username} as a NFT Reward for subscribing to {creator.Username}. You can claim it anytime on your profile.", _dateTime.UtcNow, createSellOfferResult.Data));
 
                 return await Result.SuccessAsync();
             }

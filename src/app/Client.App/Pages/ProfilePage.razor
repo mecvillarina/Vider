@@ -332,6 +332,51 @@
                         </div>
                     </MudPaper>
                 </MudTabPanel>
+                <MudTabPanel Text="Activities">
+                    <MudPaper Square="true" Elevation="10" Class="py-8 px-4 px-sm-8 mt-0 blue-grey darken-4" Style="min-height: 300px">
+                        <div>
+                            <MudText Typo="Typo.h4" Class="text-white">Activities</MudText>
+                        </div>
+
+                        <div>
+                            @if (IsFetchingActivities)
+                            {
+                                <div>
+                                    <MudSkeleton Animation="Animation.Wave" Height="100px" Width="100%" />
+                                </div>
+                            }
+                            else
+                            {
+                                @if (!Activities.Any())
+                                {
+                                    <MudText Class="text-white" Typo="Typo.h6">Hmm.. You don't have any activities..</MudText>
+                                }
+                                else
+                                {
+                                    <MudTable Items="Activities" Class="my-4 mx-0 background" Breakpoint="Breakpoint.None">
+                                        <HeaderContent>
+                                            <MudTh>Date</MudTh>
+                                            <MudTh>Event</MudTh>
+                                            <MudTh></MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd DataLabel="Date">@context.DateOccured</MudTd>
+                                            <MudTd DataLabel="Event">
+                                                @context.Action
+                                            </MudTd>
+                                            <MudTd DataLabel="Transaction">
+                                                @if (!string.IsNullOrEmpty(context.TxHash))
+                                                {
+                                        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="(() => InvokeViewTxModalAsync(context.TxHash))">View XRPL TX</MudButton>
+                                                }
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                                }
+                            }
+                        </div>
+                    </MudPaper>
+                </MudTabPanel>
             </MudTabs>
         </MudPaper>
     </MudContainer>

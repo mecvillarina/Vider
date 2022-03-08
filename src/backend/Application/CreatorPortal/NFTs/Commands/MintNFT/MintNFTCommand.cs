@@ -4,11 +4,11 @@ using Application.Common.Interfaces;
 using Application.Common.Models;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,8 +29,9 @@ namespace Application.CreatorPortal.NFTs.Commands.MintNFT
             private readonly IAzureStorageBlobService _blobService;
             private readonly IConfiguration _configuration;
             private readonly IDateTime _dateTime;
+            private readonly IDomainEventService _domainEventService;
 
-            public MintNFTCommandHandler(ICallContext context, IXrplNFTTokenService tokenService, IApplicationDbContext dbContext, IAzureStorageBlobService blobService, IConfiguration configuration, IDateTime dateTime)
+            public MintNFTCommandHandler(ICallContext context, IXrplNFTTokenService tokenService, IApplicationDbContext dbContext, IAzureStorageBlobService blobService, IConfiguration configuration, IDateTime dateTime, IDomainEventService domainEventService)
             {
                 _context = context;
                 _tokenService = tokenService;
@@ -38,6 +39,7 @@ namespace Application.CreatorPortal.NFTs.Commands.MintNFT
                 _blobService = blobService;
                 _configuration = configuration;
                 _dateTime = dateTime;
+                _domainEventService = domainEventService;
             }
 
             public async Task<IResult> Handle(MintNFTCommand request, CancellationToken cancellationToken)
@@ -96,7 +98,9 @@ namespace Application.CreatorPortal.NFTs.Commands.MintNFT
                     TokenFlags = accountNft.Flags,
                     NftSerial = accountNft.NftSerial,
                 });
+
                 await _dbContext.SaveChangesAsync();
+                await _domainEventService.Publish(new ActivityLogAddEvent(_context.UserId, _context.UserAccountAddress, $"You've minted an NFT ({metadata.Id}).", _dateTime.UtcNow, mintResult.Data));
 
                 return await Result.SuccessAsync();
             }
