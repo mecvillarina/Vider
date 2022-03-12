@@ -135,7 +135,7 @@ namespace Infrastructure.Identity
 
             if (creator != null)
             {
-                var userPassword = await _dbContext.CreatorPasswords.AsQueryable().FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == creator.Id);
+                var userPassword = await _dbContext.CreatorPasswords.AsQueryable().FirstOrDefaultAsync(x => !x.IsDeleted && x.CreatorId == creator.Id);
                 if (userPassword != null)
                 {
                     var passwordHash = HasherExtensions.Hash(password, userPassword.Salt, SHA512.Create());
@@ -166,7 +166,7 @@ namespace Infrastructure.Identity
             if (currentPassword != null)
             {
                 currentPassword.IsDeleted = true;
-
+                _dbContext.CreatorPasswords.Update(currentPassword);
                 _dbContext.SaveChangesAsync().Wait();
             }
 
